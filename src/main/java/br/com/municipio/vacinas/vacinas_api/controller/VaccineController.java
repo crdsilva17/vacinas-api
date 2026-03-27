@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.municipio.vacinas.vacinas_api.entity.VaccineEntity;
+import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 import br.com.municipio.vacinas.vacinas_api.service.VaccineService;
 
 
@@ -25,19 +25,19 @@ public class VaccineController {
     }
 
     @GetMapping
-    public  List<VaccineEntity> listar() {
+    public  List<Vacina> listar() {
         return service.listarTodas();
 
     }
 
     @GetMapping("/filter")
-    public List<VaccineEntity> filtrar(@RequestParam LocalDate data, @RequestParam String localId) {
+    public List<Vacina> filtrar(@RequestParam LocalDate data, @RequestParam String localId) {
         return service.filtrar(data, localId);
 
     }
 
     @PostMapping
-    public VaccineEntity criar(@RequestBody VaccineEntity vaccine) {
+    public Vacina criar(@RequestBody Vacina vaccine) {
         return service.salvar(vaccine);
         
     }

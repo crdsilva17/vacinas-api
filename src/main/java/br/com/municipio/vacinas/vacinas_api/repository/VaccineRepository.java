@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import br.com.municipio.vacinas.vacinas_api.entity.VaccineEntity;
+import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 
-public interface VaccineRepository extends MongoRepository<VaccineEntity, String> {
+public interface VaccineRepository extends MongoRepository<Vacina, String> {
 
-    List<VaccineEntity> findByDataDisponivel(LocalDate dataDisponivel);
-    List<VaccineEntity> findByLocalId(String LocalId);
-    List<VaccineEntity> findByDataDisponivelAndLocalId(LocalDate dataDisponivel, String localId);
+    List<Vacina> findByDataDisponivel(LocalDate dataDisponivel);
+    List<Vacina> findByLocalId(String LocalId);
+    List<Vacina> findByDataDisponivelAndLocalId(LocalDate dataDisponivel, String localId);
 
 }
