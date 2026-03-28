@@ -1,5 +1,7 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.mongodb.DuplicateKeyException;
@@ -43,8 +45,8 @@ public class LoteService {
         repository.deleteByNumeroLote(numeroLote);
     }
 
-    public LoteResponseDTO buscarPorNumero(String numeroLote) {
-        return mapper.toDTO(repository.findById(numeroLote).orElseThrow(() -> new RuntimeException("Lote não encontrado!")));
+    public List<LoteResponseDTO> buscarPorNumero(String numeroLote) {
+        return mapper.toDTOList(repository.findByNumeroLote(numeroLote).orElseThrow(() -> new RuntimeException("Lote não encontrado!")));
     }
 
 }

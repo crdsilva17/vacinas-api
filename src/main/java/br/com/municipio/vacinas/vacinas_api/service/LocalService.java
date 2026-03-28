@@ -45,4 +45,12 @@ public class LocalService {
         repository.deleteByName(name);
     }
 
+    public LocalResponseDTO buscarLocalPorId(String id) {
+        return mapper.toDTO(repository.findById(id).orElseThrow(() -> new RuntimeException("Local não encontrado")));
+    }
+
+    public LocalResponseDTO buscarLocalPorNome(String name) {
+        return mapper.toDTO(repository.findByName(name).orElseThrow(() -> new RuntimeException("Local não encontrado")));
+    }
+
 }
