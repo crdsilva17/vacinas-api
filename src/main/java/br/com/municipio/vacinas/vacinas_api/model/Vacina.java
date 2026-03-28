@@ -1,20 +1,17 @@
 package br.com.municipio.vacinas.vacinas_api.model;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
+import br.com.municipio.vacinas.vacinas_api.model.enums.Doses;
 import lombok.*;
 
 @CompoundIndexes({
-    @CompoundIndex(name = "nome_lote_unique", def = "{'nome': 1, 'lote': 1}", unique = true)
+    @CompoundIndex(name = "nome_loteId_localId_unique", def = "{'nome': 1, 'loteId': 1, 'localId': 1}", unique = true)
 })
 
 @Data
@@ -27,23 +24,16 @@ public class Vacina {
     private String id;
 
     private String local;
-    private String nome;
-    private String descricao;
-    private String fabricante;
     private String lote;
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dataFabricacao;
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dataValidade;
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dataDisponivel;
+    private String nome;
 
     private int idadeMinima;
     private int idadeMaxima;
-    private int doses;
-    private int quantidadeDisponivel;
+    private Doses doses;
 
+    private String descricao;
+    private String fabricante;
+    private LocalDate dataFabricacao;
+    private LocalDate dataValidade;
+    private int quantidadeDisponivel;
 }

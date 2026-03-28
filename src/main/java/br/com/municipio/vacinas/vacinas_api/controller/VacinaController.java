@@ -1,42 +1,56 @@
 package br.com.municipio.vacinas.vacinas_api.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 import br.com.municipio.vacinas.vacinas_api.service.VacinaService;
-import lombok.AllArgsConstructor;
+import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
+import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
 
-@AllArgsConstructor
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/vacinas")
 public class VacinaController {
 
     private final VacinaService service;
 
-    @GetMapping
-    public  List<Vacina> listar() {
-        return service.buscarVacinas();
-
-    }
-
-    @GetMapping("/filter")
-    public List<Vacina> filtrar(@RequestParam LocalDate data, @RequestParam String local) {
-        return service.filtrar(data, local);
-
-    }
-
     @PostMapping
-    public Vacina criar(@RequestBody Vacina vaccine) {
-        return service.cadastrarVacina(vaccine);
-        
+    public ResponseEntity<VacinaResponseDTO> cadastrarVacina(@RequestBody VacinaRequestDTO request) {
+        return ResponseEntity.ok(service.cadastrarVacina(request));
     }
+
+    @GetMapping("/{nome}")
+    public ResponseEntity<List<VacinaResponseDTO>> buscarPorNome(@PathVariable("nome") String nome) {
+        return ResponseEntity.ok(service.buscarPorNome(nome));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VacinaResponseDTO>> buscarVacinas() {
+        return ResponseEntity.ok(service.buscarVacinas());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> excluirPorNome(@RequestParam("nome") String nome){
+        service.excluirVacinaPorNome(nome);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lote")
+    public ResponseEntity<Void> excluirPorNomeELoteId(@RequestParam("nome") String nome, @RequestParam("loteId") String lote) {
+        service.excluirVacinaPorNomeELote(nome, lote);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

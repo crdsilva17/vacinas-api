@@ -6,44 +6,69 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.DuplicateKeyException;
 
-import java.time.LocalDate;
-
 import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
-import lombok.AllArgsConstructor;
-import br.com.municipio.vacinas.vacinas_api.model.Vacina;
+import lombok.RequiredArgsConstructor;
+import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
+import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
+import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class VacinaService {
 
     private final VacinaRepository repository;
+    private final VacinaMapper mapper;
 
-    public Vacina cadastrarVacina(Vacina vacina) {
+    public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
 
-        if (repository.existsByNomeAndLote(vacina.getNome(), vacina.getLote())) {
+        if (repository.existsByNomeAndLoteAndLocal(request.getNome(), request.getLote(), request.getLocal())) {
             throw new RuntimeException("Já existe uma vacina com esse nome e lote!");
         }
         try {
-            return repository.save(vacina);
+            
+            return mapper.toDTO(repository.save(mapper.toEntity(request)));
         } catch (DuplicateKeyException e) {
             throw new RuntimeException("Vacina com mesmo nome e lote já existe!");
         }
     }
 
-    public Vacina editarVacina(Vacina vacina) {
-        return repository.save(vacina);
+    public VacinaResponseDTO editarVacina(VacinaRequestDTO request) {
+        return mapper.toDTO(repository.save(mapper.toEntity(request)));
     }
 
-    public void excluirVacina(String id) {
+    public void excluirVacinaPorId(String id) {
         repository.deleteById(id);
     }
 
-    public List<Vacina> buscarVacinas() {
-        return repository.findAll();
+    public void excluirVacinaPorNome(String nome) {
+        List<VacinaResponseDTO> vacinas = buscarPorNome(nome);
+        vacinas.forEach(vacina -> repository.deleteById(vacina.getId()));
     }
 
-    public List<Vacina> filtrar(LocalDate data, String local) {
-        return repository.findByDataDisponivelAndLocal(data, local);
+    public void excluirVacinaPorLote(String lote) {
+        List<VacinaResponseDTO> vacinas = buscarPorLote(lote);
+        vacinas.forEach(vacina -> repository.deleteById(vacina.getId()));
+    }
+
+    public void excluirVacinaPorNomeELote(String nome, String lote) {
+        List<VacinaResponseDTO> vacinas = buscarPorNome(nome);
+        vacinas.stream()
+                .filter(vacina -> vacina.getLote().equals(lote))
+                .forEach(vacina -> repository.deleteById(vacina.getId()));
+    }
+
+    public List<VacinaResponseDTO> buscarVacinas() {
+        return mapper.toDTOList(repository.findAll());
+    }
+
+    public List<VacinaResponseDTO> buscarPorLocal(String local){
+        return mapper.toDTOList(repository.findByLocal(local));
+    }
+    public List<VacinaResponseDTO> buscarPorLote(String lote){
+        return mapper.toDTOList(repository.findByLote(lote));
+    }
+    public List<VacinaResponseDTO> buscarPorNome(String nome){
+        return mapper.toDTOList(repository.findByNome(nome));
     }
 
 }
