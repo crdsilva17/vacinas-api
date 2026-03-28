@@ -1,13 +1,12 @@
 package br.com.municipio.vacinas.vacinas_api.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -16,10 +15,13 @@ import lombok.NoArgsConstructor;
 public class Notificacao {
 
     @Id
-    private String id;
-
+    private UUID id;
+    
     private String mensagem;
-    private String usuarioId;
+
+    @Field(name="user_id")
+    private UUID usuarioId;
+    @Field(name="data_envio")
     private Date dataEnvio;
 
 }

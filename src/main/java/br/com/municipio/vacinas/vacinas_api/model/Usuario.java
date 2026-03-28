@@ -4,11 +4,14 @@ import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 
 import org.springframework.data.annotation.Id;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,13 +20,21 @@ import java.util.Date;
 public class Usuario {
 
     @Id
-    private String id;
+    private UUID id;
 
+    @Field(name="full_name")
     private String nome;
+
+    @Indexed(unique = true)
     private String email;
+
+    @Field(name="password")
     private String senha;
+
+    @Field(name="birth_date")
     private Date dataNscto;
 
+    @Field(name="role")
     private Role role;
 
 }

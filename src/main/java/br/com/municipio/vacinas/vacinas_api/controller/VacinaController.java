@@ -11,34 +11,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.municipio.vacinas.vacinas_api.model.Vacina;
-import br.com.municipio.vacinas.vacinas_api.service.VaccineService;
+import br.com.municipio.vacinas.vacinas_api.service.VacinaService;
+import lombok.AllArgsConstructor;
 
-
+@AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/vaccines")
-public class VaccineController {
+@RequestMapping("/api/v1/vacinas")
+public class VacinaController {
 
-    private final VaccineService service;
-
-    public VaccineController(VaccineService service) {
-        this.service = service;
-    }
+    private final VacinaService service;
 
     @GetMapping
     public  List<Vacina> listar() {
-        return service.listarTodas();
+        return service.buscarVacinas();
 
     }
 
     @GetMapping("/filter")
-    public List<Vacina> filtrar(@RequestParam LocalDate data, @RequestParam String localId) {
-        return service.filtrar(data, localId);
+    public List<Vacina> filtrar(@RequestParam LocalDate data, @RequestParam String local) {
+        return service.filtrar(data, local);
 
     }
 
     @PostMapping
     public Vacina criar(@RequestBody Vacina vaccine) {
-        return service.salvar(vaccine);
+        return service.cadastrarVacina(vaccine);
         
     }
 

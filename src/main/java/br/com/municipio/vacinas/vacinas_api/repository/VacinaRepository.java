@@ -7,10 +7,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 
-public interface VaccineRepository extends MongoRepository<Vacina, String> {
+public interface VacinaRepository extends MongoRepository<Vacina, String> {
+
+    boolean existsByNomeAndLote(String nome, String lote);
 
     List<Vacina> findByDataDisponivel(LocalDate dataDisponivel);
-    List<Vacina> findByLocalId(String LocalId);
-    List<Vacina> findByDataDisponivelAndLocalId(LocalDate dataDisponivel, String localId);
+    List<Vacina> findByLocal(String Local);
+    List<Vacina> findByDataDisponivelAndLocal(LocalDate dataDisponivel, String local);
 
 }
