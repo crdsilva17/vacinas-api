@@ -6,17 +6,20 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.DuplicateKeyException;
 
+import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
 import lombok.RequiredArgsConstructor;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
+import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 
 @Service
 @RequiredArgsConstructor
 public class VacinaService {
 
     private final VacinaRepository repository;
+    private final LocalRepository localRepository;
     private final VacinaMapper mapper;
 
     public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
@@ -25,8 +28,15 @@ public class VacinaService {
             throw new RuntimeException("Já existe uma vacina com esse nome e lote!");
         }
         try {
-            
+
+            if (!localRepository.existsByName(request.getLocal())) {
+                LocalVacina local = new LocalVacina();
+                local.setName(request.getLocal());
+                localRepository.save(local);
+            }
+
             return mapper.toDTO(repository.save(mapper.toEntity(request)));
+            
         } catch (DuplicateKeyException e) {
             throw new RuntimeException("Vacina com mesmo nome e lote já existe!");
         }
