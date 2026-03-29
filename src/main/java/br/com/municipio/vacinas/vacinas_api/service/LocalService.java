@@ -30,10 +30,13 @@ public class LocalService {
         }
         try {
             Endereco endereco = mapper.toEnderecoEntity(request);
-            request.setEnderecoId(endereco.getId());
-            LocalResponseDTO response = mapper.toDTO(repository.save(mapper.toEntity(request)));
+            
+            LocalResponseDTO response = mapper.toDTO(mapper.toEntity(request));
             endereco.setLocalId(response.getId());
+            
             enderecoRepository.save(endereco);
+            response.setEnderecoId(enderecoRepository.findByLocalId(response.getId()).orElseThrow(null).getId());
+            response = mapper.toDTO(repository.save(mapper.toLocalVacina(response)));
             return response;
 
         } catch (DuplicateKeyException e) {
@@ -50,11 +53,10 @@ public class LocalService {
             .name(request.getName() != null ? request.getName() : localEntity.getName())
             .id(id)
             .horarioFuncionamento(request.getHorarioFuncionamento() != null ? request.getHorarioFuncionamento() : localEntity.getHorarioFuncionamento())
-            .enderecoId(request.getEnderecoId() != null ? request.getEnderecoId() : enderecoEntity.getId())
             .build();
         
         Endereco enderecoAtualizado = Endereco.builder()
-            .id(request.getEnderecoId() != null ? request.getEnderecoId() : enderecoEntity.getId())
+            .id(enderecoEntity.getId())
             .localId(id)
             .rua(request.getRua() != null ? request.getRua() : enderecoEntity.getRua())
             .numero(request.getNumero() != null ? request.getNumero() : enderecoEntity.getNumero())

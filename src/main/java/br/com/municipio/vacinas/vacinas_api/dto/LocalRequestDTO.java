@@ -6,7 +6,6 @@ import lombok.Data;
 public class LocalRequestDTO {
 
     private String name;
-    private String enderecoId;
     private String rua;
     private String numero;
     private String bairro;

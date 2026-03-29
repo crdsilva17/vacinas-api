@@ -14,10 +14,16 @@ import br.com.municipio.vacinas.vacinas_api.dto.LocalResponseDTO;
 public interface LocalMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "enderecoId", ignore = true)
     LocalVacina toEntity(LocalRequestDTO dto);
+
+    LocalVacina toLocalVacina(LocalResponseDTO dto);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "localId", ignore = true)
     Endereco toEnderecoEntity(LocalRequestDTO dto);
+
+
 
     LocalResponseDTO toDTO(LocalVacina entity);
 
