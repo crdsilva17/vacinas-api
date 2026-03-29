@@ -3,6 +3,7 @@ package br.com.municipio.vacinas.vacinas_api.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,6 @@ public class Endereco {
     private String id;
 
     private String localId;
-    
     private String rua;
     private String numero;
     private String bairro;

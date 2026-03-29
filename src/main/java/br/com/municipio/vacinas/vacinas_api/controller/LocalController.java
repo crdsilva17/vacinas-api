@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.municipio.vacinas.vacinas_api.dto.LocalRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.LocalResponseDTO;
-import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 import br.com.municipio.vacinas.vacinas_api.service.LocalService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +26,7 @@ public class LocalController {
     private final LocalService service;
 
     @PostMapping
-    public ResponseEntity<LocalResponseDTO> cadastrarLocal(@RequestBody LocalRequestDTO request) {
+    public ResponseEntity<LocalResponseDTO> cadastrarLocal(@Valid@RequestBody LocalRequestDTO request) {
         return ResponseEntity.ok(service.cadastrarLocal(request));
     }
 
