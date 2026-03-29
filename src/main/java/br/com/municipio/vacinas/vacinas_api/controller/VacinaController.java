@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import br.com.municipio.vacinas.vacinas_api.service.VacinaService;
+import jakarta.validation.Valid;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
 
@@ -26,7 +27,7 @@ public class VacinaController {
     private final VacinaService service;
 
     @PostMapping
-    public ResponseEntity<VacinaResponseDTO> cadastrarVacina(@RequestBody VacinaRequestDTO request) {
+    public ResponseEntity<VacinaResponseDTO> cadastrarVacina(@Valid @RequestBody VacinaRequestDTO request) {
         return ResponseEntity.ok(service.cadastrarVacina(request));
     }
 

@@ -26,7 +26,7 @@ public class LocalController {
     private final LocalService service;
 
     @PostMapping
-    public ResponseEntity<LocalResponseDTO> cadastrarLocal(@Valid@RequestBody LocalRequestDTO request) {
+    public ResponseEntity<LocalResponseDTO> cadastrarLocal(@Valid @RequestBody LocalRequestDTO request) {
         return ResponseEntity.ok(service.cadastrarLocal(request));
     }
 
@@ -41,7 +41,7 @@ public class LocalController {
     }
 
     @PutMapping
-    public ResponseEntity<LocalResponseDTO> editarLocal(@RequestParam String id, @RequestBody LocalRequestDTO request) {
+    public ResponseEntity<LocalResponseDTO> editarLocal(@RequestParam String id,@Valid @RequestBody LocalRequestDTO request) {
         
         return ResponseEntity.ok(service.editarLocal(id, request));
         
