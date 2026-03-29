@@ -16,6 +16,7 @@ public interface LocalMapper {
     @Mapping(target = "id", ignore = true)
     LocalVacina toEntity(LocalRequestDTO dto);
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "localId", ignore = true)
     Endereco toEnderecoEntity(LocalRequestDTO dto);
 
     LocalResponseDTO toDTO(LocalVacina entity);

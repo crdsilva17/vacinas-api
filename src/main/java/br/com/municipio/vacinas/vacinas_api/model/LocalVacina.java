@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "locais")
 public class LocalVacina {
 
