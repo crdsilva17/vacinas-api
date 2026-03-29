@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.mongodb.DuplicateKeyException;
 
 import br.com.municipio.vacinas.vacinas_api.mapper.LocalMapper;
+import br.com.municipio.vacinas.vacinas_api.model.Endereco;
+import br.com.municipio.vacinas.vacinas_api.repository.EnderecoRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import br.com.municipio.vacinas.vacinas_api.dto.LocalResponseDTO;
 public class LocalService {
 
     private final LocalRepository repository;
+    private final EnderecoRepository enderecoRepository;
     private final LocalMapper mapper;
 
     public LocalResponseDTO cadastrarLocal(LocalRequestDTO request) {
@@ -25,7 +28,8 @@ public class LocalService {
             throw new RuntimeException("Já existe um local com esse nome!");
         }
         try {
-
+            Endereco endereco = enderecoRepository.save(mapper.toEnderecoEntity(request));
+            request.setEnderecoId(endereco.getId());
             return mapper.toDTO(repository.save(mapper.toEntity(request)));
 
         } catch (DuplicateKeyException e) {

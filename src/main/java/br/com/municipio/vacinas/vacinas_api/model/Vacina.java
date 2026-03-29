@@ -11,7 +11,7 @@ import br.com.municipio.vacinas.vacinas_api.model.enums.Doses;
 import lombok.*;
 
 @CompoundIndexes({
-    @CompoundIndex(name = "nome_loteId_localId_unique", def = "{'nome': 1, 'loteId': 1, 'localId': 1}", unique = true)
+    @CompoundIndex(name = "nome_lote_local_unique", def = "{'nome': 1, 'lote': 1, 'local': 1}", unique = true)
 })
 
 @Data

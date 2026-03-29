@@ -33,7 +33,7 @@ public class VacinaService {
         try {
 
             if (!localRepository.existsByName(request.getLocal())) {
-                
+
                 LocalVacina local = new LocalVacina();
                 local.setName(request.getLocal());
                 localRepository.save(local);
