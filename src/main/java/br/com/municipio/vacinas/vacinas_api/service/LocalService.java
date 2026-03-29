@@ -1,9 +1,13 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.mongodb.DuplicateKeyException;
 
+import br.com.municipio.vacinas.vacinas_api.mapper.EnderecoMapper;
 import br.com.municipio.vacinas.vacinas_api.mapper.LocalMapper;
 import br.com.municipio.vacinas.vacinas_api.model.Endereco;
 import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
@@ -22,6 +26,7 @@ public class LocalService {
     private final LocalRepository repository;
     private final EnderecoRepository enderecoRepository;
     private final LocalMapper mapper;
+    private final EnderecoMapper endMapper;
 
     public LocalResponseDTO cadastrarLocal(LocalRequestDTO request) {
 
@@ -29,14 +34,16 @@ public class LocalService {
             throw new RuntimeException("Já existe um local com esse nome!");
         }
         try {
-            Endereco endereco = mapper.toEnderecoEntity(request);
-            
+            Endereco endereco = endMapper.toEnderecoEntity(request);
             LocalResponseDTO response = mapper.toDTO(mapper.toEntity(request));
+
+            response = mapper.toDTO(repository.save(mapper.toLocalVacina(response)));
             endereco.setLocalId(response.getId());
             
             enderecoRepository.save(endereco);
             response.setEnderecoId(enderecoRepository.findByLocalId(response.getId()).orElseThrow(null).getId());
             response = mapper.toDTO(repository.save(mapper.toLocalVacina(response)));
+            response = endMapper.toLocalDTO(endereco, response);
             return response;
 
         } catch (DuplicateKeyException e) {
@@ -67,23 +74,51 @@ public class LocalService {
             .build();
         
         enderecoRepository.save(enderecoAtualizado);
-        return mapper.toDTO(repository.save(localAtualizado));
+        localAtualizado.setEnderecoId(enderecoAtualizado.getId());
+        return endMapper.toLocalDTO(enderecoAtualizado, mapper.toDTO(repository.save(localAtualizado)));
     }
 
     public void excluirLocalPorId(String id) {
+        enderecoRepository.deleteById(repository.findById(id).orElseThrow(() -> new RuntimeException("Endereco não encontrado!")).getEnderecoId());
         repository.deleteById(id);
     }
 
     public void excluirLocalPorNome(String name) {
+        enderecoRepository.deleteById(repository.findByName(name).orElseThrow(
+            () -> new RuntimeException("Endereço não encontrado!")
+        ).getEnderecoId());
         repository.deleteByName(name);
     }
 
     public LocalResponseDTO buscarLocalPorId(String id) {
-        return mapper.toDTO(repository.findById(id).orElseThrow(() -> new RuntimeException("Local não encontrado")));
+        Endereco endereco = enderecoRepository.findByLocalId(id).orElseThrow(
+            () -> new RuntimeException("Endereço não encontrado!")
+        );
+        LocalResponseDTO localResponse =  mapper.toDTO(repository.findById(id).orElseThrow(() -> new RuntimeException("Local não encontrado")));
+        localResponse = endMapper.toLocalDTO(endereco, localResponse);
+        return localResponse;
     }
 
     public LocalResponseDTO buscarLocalPorNome(String name) {
-        return mapper.toDTO(repository.findByName(name).orElseThrow(() -> new RuntimeException("Local não encontrado")));
+        return buscarLocalPorId(repository.findByName(name).orElseThrow(
+            () -> new RuntimeException("Local não encontrado!")
+        ).getId());
+    }
+
+    public List<LocalResponseDTO> listarLocais() {
+        List<LocalVacina> locais = repository.findAll();
+        List<LocalResponseDTO> locaisResponse = new ArrayList<>();
+        for (LocalVacina local : locais) {
+            locaisResponse.add(endMapper.toLocalDTO(
+                enderecoRepository.findByLocalId(local.getId()).orElse(
+                    enderecoRepository.findById(local.getEnderecoId()).orElseThrow(
+                        () -> new RuntimeException("Endereço não encontrado!")
+                    )
+                ),
+                mapper.toDTO(local)
+            ));
+        }
+        return locaisResponse;
     }
 
 }

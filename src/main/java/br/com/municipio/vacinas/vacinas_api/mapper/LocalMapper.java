@@ -5,7 +5,6 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import br.com.municipio.vacinas.vacinas_api.model.Endereco;
 import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 import br.com.municipio.vacinas.vacinas_api.dto.LocalRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.LocalResponseDTO;
@@ -18,12 +17,6 @@ public interface LocalMapper {
     LocalVacina toEntity(LocalRequestDTO dto);
 
     LocalVacina toLocalVacina(LocalResponseDTO dto);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "localId", ignore = true)
-    Endereco toEnderecoEntity(LocalRequestDTO dto);
-
-
 
     LocalResponseDTO toDTO(LocalVacina entity);
 
