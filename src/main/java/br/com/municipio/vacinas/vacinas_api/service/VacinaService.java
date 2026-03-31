@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
-import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 import br.com.municipio.vacinas.vacinas_api.model.Lote;
 
 @Service
@@ -27,28 +27,42 @@ public class VacinaService {
 
     public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
 
-        if (repository.existsByNomeAndLoteAndLocal(request.getNome(), request.getLote(), request.getLocal())) {
-            throw new RuntimeException("Já existe uma vacina com esse nome e lote!");
+        if (repository.existsByNomeAndLoteAndLocalAndFabricanteAndDataFabricacao(
+                request.getNome(), request.getLote(), request.getLocal(), request.getFabricante(), request.getDataFabricacao())) {
+            throw new RuntimeException("Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
         }
         try {
 
             if (!localRepository.existsByName(request.getLocal())) {
 
-                LocalVacina local = new LocalVacina();
-                local.setName(request.getLocal());
-                localRepository.save(local);
+                throw new RuntimeException("Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
             }
 
             if (!loteRepository.existsByNumeroLote(request.getLote())) {
                 
                 Lote lote = new Lote();
                 lote.setNumeroLote(request.getLote());
-                lote.setFabricante(request.getFabricante());
+                lote.setFabricante(Arrays.asList(request.getFabricante()));
                 lote.setDataFabricacao(request.getDataFabricacao());
                 lote.setDataValidade(request.getDataValidade());
                 lote.setQuantidadeDisponivel(request.getQuantidadeDisponivel());
                 lote.setTipo(request.getDescricao());
+                lote.setVacinasAssociadas(Arrays.asList(request.getNome()));
                 loteRepository.save(lote);  
+            } else {
+                Lote lote = loteRepository.findByNumeroLote(request.getLote()).orElseThrow(null);
+                List<String> vacinasAssociadas = lote.getVacinasAssociadas();
+                List<String> fabricantes = lote.getFabricante();
+                if (!vacinasAssociadas.contains(request.getNome())) {
+                    vacinasAssociadas.add(request.getNome());
+                    lote.setVacinasAssociadas(vacinasAssociadas);
+                    
+                }
+                if (!fabricantes.contains(request.getFabricante())) {
+                    fabricantes.add(request.getFabricante());
+                    lote.setFabricante(fabricantes);
+                }
+                loteRepository.save(lote);
             }
 
             return mapper.toDTO(repository.save(mapper.toEntity(request)));

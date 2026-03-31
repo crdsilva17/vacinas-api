@@ -13,10 +13,21 @@ import br.com.municipio.vacinas.vacinas_api.dto.LoteResponseDTO;
 public interface LoteMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fabricante", source = "fabricante")
+    @Mapping(target = "vacinasAssociadas", ignore = true)
     Lote toEntity(LoteRequestDTO dto);
 
+    @Mapping(target = "fabricante", source = "fabricante")
     LoteResponseDTO toDTO(Lote entity);
 
     List<LoteResponseDTO> toDTOList(List<Lote> entities);
+
+    default List<String> mapFabricante(String fabricante) {
+        return fabricante != null ? java.util.Arrays.asList(fabricante) : null;
+    }
+
+    default String mapFabricante(List<String> fabricante) {
+        return (fabricante != null && !fabricante.isEmpty()) ? fabricante.get(0) : null;
+    }
 
 }

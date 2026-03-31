@@ -1,6 +1,7 @@
 package br.com.municipio.vacinas.vacinas_api.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -25,7 +26,9 @@ public class Lote {
     private String numeroLote;
 
     private String tipo;
-    private String fabricante;
+    private List<String> fabricante;
+
+    private List<String> vacinasAssociadas;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFabricacao;

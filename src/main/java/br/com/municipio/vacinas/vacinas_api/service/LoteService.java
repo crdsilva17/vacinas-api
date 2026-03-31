@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class LoteService {
     }
 
     public List<LoteResponseDTO> buscarPorNumero(String numeroLote) {
-        return mapper.toDTOList(repository.findByNumeroLote(numeroLote).orElseThrow(() -> new RuntimeException("Lote não encontrado!")));
+        return mapper.toDTOList(Arrays.asList(repository.findByNumeroLote(numeroLote).orElseThrow(() -> new RuntimeException("Lote não encontrado!"))));
     }
 
 }
