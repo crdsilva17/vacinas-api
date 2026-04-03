@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +19,9 @@ import java.util.UUID;
 public class Usuario {
 
     @Id
-    private UUID id;
+    private String id;
+
+    private String localId;
 
     @Field(name="full_name")
     private String nome;
@@ -33,6 +34,9 @@ public class Usuario {
 
     @Field(name="birth_date")
     private Date dataNscto;
+
+    @Indexed(unique = true)
+    private String cpf;
 
     @Field(name="role")
     private Role role;
