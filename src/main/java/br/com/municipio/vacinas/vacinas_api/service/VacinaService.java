@@ -166,8 +166,7 @@ public class VacinaService {
             () -> new RuntimeException("Lote não encontrado!")
         );
 
-        List<Vacina> vacinas = repository.findAll();
-        vacinas.remove(vacina);
+        List<Vacina> vacinas = repository.findByLote(vacina.getLote());
         boolean flag = false;
         /* 
             O loop for foi implementado para verificar se existem outras vacinas associadas ao mesmo fabricante e lote da vacina que está sendo excluída. 
@@ -176,7 +175,7 @@ public class VacinaService {
             Caso contrário, a variável flag permanece como false, indicando que não há outras vacinas associadas ao mesmo fabricante e lote.
         */
         for (Vacina v : vacinas) {
-            if (v.getId() != vacina.getId() && v.getFabricante().equals(vacina.getFabricante()) && v.getLote().equals(lote.getNumeroLote())) {
+            if (!v.getId().equals(vacina.getId()) && v.getFabricante().equals(vacina.getFabricante())) {
                 flag = true;
                 break;
             }
@@ -194,8 +193,7 @@ public class VacinaService {
             Caso contrário, a variável flag permanece como false, indicando que não há outras vacinas associadas ao mesmo lote e nome.
         */
         for (Vacina v : vacinas) {
-            if (v.getLote().equals(vacina.getLote()) 
-                && v.getId() != vacina.getId() && v.getNome().equals(vacina.getNome())){
+            if (!v.getId().equals(vacina.getId()) && v.getNome().equals(vacina.getNome())){
                 flag = true;
                 break;
             }

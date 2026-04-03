@@ -13,6 +13,7 @@ import br.com.municipio.vacinas.vacinas_api.model.Endereco;
 import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 import br.com.municipio.vacinas.vacinas_api.repository.EnderecoRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
+import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
 import lombok.RequiredArgsConstructor;
 
 import br.com.municipio.vacinas.vacinas_api.dto.LocalRequestDTO;
@@ -25,6 +26,8 @@ public class LocalService {
 
     private final LocalRepository repository;
     private final EnderecoRepository enderecoRepository;
+    private final VacinaRepository vacinaRepository;
+    private final VacinaService vacinaService;
     private final LocalMapper mapper;
     private final EnderecoMapper endMapper;
 
@@ -80,6 +83,11 @@ public class LocalService {
 
     public void excluirLocalPorId(String id) {
         enderecoRepository.deleteById(repository.findById(id).orElseThrow(() -> new RuntimeException("Endereco não encontrado!")).getEnderecoId());
+        
+        vacinaRepository.findByLocal(repository.findById(id).orElseThrow(
+            () -> new RuntimeException("Local não encontrado!")
+        ).getName()).forEach(vacina -> vacinaService.excluirVacinaPorId(vacina.getId()));
+
         repository.deleteById(id);
     }
 
@@ -87,6 +95,9 @@ public class LocalService {
         enderecoRepository.deleteById(repository.findByName(name).orElseThrow(
             () -> new RuntimeException("Endereço não encontrado!")
         ).getEnderecoId());
+
+        vacinaRepository.findByLocal(name).forEach(vacina -> vacinaService.excluirVacinaPorId(vacina.getId()));
+
         repository.deleteByName(name);
     }
 
