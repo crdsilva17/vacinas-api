@@ -7,13 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.DuplicateKeyException;
 
+import lombok.RequiredArgsConstructor;
+
 import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.LoteRepository;
-import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
-import lombok.RequiredArgsConstructor;
+
+import br.com.municipio.vacinas.vacinas_api.model.Vacina;
+import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
-import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
+import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
+
 import br.com.municipio.vacinas.vacinas_api.model.Lote;
 
 @Service
@@ -43,8 +47,6 @@ public class VacinaService {
                 Lote lote = new Lote();
                 lote.setNumeroLote(request.getLote());
                 lote.setFabricante(Arrays.asList(request.getFabricante()));
-                lote.setDataFabricacao(request.getDataFabricacao());
-                lote.setDataValidade(request.getDataValidade());
                 lote.setTipo(request.getDescricao());
                 lote.setVacinasAssociadas(Arrays.asList(request.getNome()));
                 loteRepository.save(lote);  
@@ -76,24 +78,50 @@ public class VacinaService {
     }
 
     public void excluirVacinaPorId(String id) {
+        Vacina vacina = repository.findById(id).orElseThrow(
+            () -> new RuntimeException("Vacina não encontrada!")
+        );
+
+        Lote lote = loteRepository.findByNumeroLote(vacina.getLote()).orElseThrow(
+            () -> new RuntimeException("Lote não encontrado!")
+        );
+
+        List<Vacina> vacinas = repository.findAll();
+        vacinas.remove(vacina);
+        boolean flag = false;
+
+        for (Vacina v : vacinas) {
+            if (v.getId() != vacina.getId() && v.getFabricante().equals(vacina.getFabricante()) && v.getLote().equals(lote.getNumeroLote())) {
+                flag = true;
+                break;
+            }
+        }
+
+        if (!flag){
+            lote.getFabricante().remove(vacina.getFabricante());
+        }
+
+        flag = false;
+
+        for (Vacina v : vacinas) {
+            if (v.getLote().equals(vacina.getLote()) 
+                && v.getId() != vacina.getId() && v.getNome().equals(vacina.getNome())){
+                flag = true;
+                break;
+            }
+        }
+
+        if (!flag){
+            lote.getVacinasAssociadas().remove(vacina.getNome());
+        }
+
+        if (lote.getFabricante().isEmpty() && lote.getVacinasAssociadas().isEmpty()) {
+            loteRepository.deleteById(lote.getId());
+        } else {
+            loteRepository.save(lote);
+        }
+
         repository.deleteById(id);
-    }
-
-    public void excluirVacinaPorNome(String nome) {
-        List<VacinaResponseDTO> vacinas = buscarPorNome(nome);
-        vacinas.forEach(vacina -> repository.deleteById(vacina.getId()));
-    }
-
-    public void excluirVacinaPorLote(String lote) {
-        List<VacinaResponseDTO> vacinas = buscarPorLote(lote);
-        vacinas.forEach(vacina -> repository.deleteById(vacina.getId()));
-    }
-
-    public void excluirVacinaPorNomeELote(String nome, String lote) {
-        List<VacinaResponseDTO> vacinas = buscarPorNome(nome);
-        vacinas.stream()
-                .filter(vacina -> vacina.getLote().equals(lote))
-                .forEach(vacina -> repository.deleteById(vacina.getId()));
     }
 
     public List<VacinaResponseDTO> buscarVacinas() {

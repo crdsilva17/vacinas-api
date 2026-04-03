@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import br.com.municipio.vacinas.vacinas_api.model.enums.Doses;
 import lombok.*;
 
@@ -33,7 +35,9 @@ public class Vacina {
 
     private String descricao;
     private String fabricante;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFabricacao;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataValidade;
     private int quantidadeDisponivel;
 }

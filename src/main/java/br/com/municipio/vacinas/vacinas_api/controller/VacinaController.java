@@ -42,15 +42,9 @@ public class VacinaController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> excluirPorNome(@RequestParam("nome") String nome){
-        service.excluirVacinaPorNome(nome);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/lote")
-    public ResponseEntity<Void> excluirPorNomeELoteId(@RequestParam("nome") String nome, @RequestParam("loteId") String lote) {
-        service.excluirVacinaPorNomeELote(nome, lote);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> excluirPorId(@RequestParam("id") String id){
+        service.excluirVacinaPorId(id);
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -29,10 +29,5 @@ public class Lote {
     private List<String> fabricante;
 
     private List<String> vacinasAssociadas;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dataFabricacao;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dataValidade;
 
 }

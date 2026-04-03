@@ -23,7 +23,6 @@ public interface LocalMapper {
     @Mapping(target = "cep", ignore = true)
     @Mapping(target = "cidade", ignore = true)
     @Mapping(target = "estado", ignore = true)
-    @Mapping(target = "id", ignore = true)
     LocalResponseDTO toDTO(LocalVacina entity);
     
     @Mapping(target = "rua", ignore = true)
