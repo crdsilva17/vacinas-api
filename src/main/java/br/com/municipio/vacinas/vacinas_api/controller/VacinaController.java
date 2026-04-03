@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
 
 import br.com.municipio.vacinas.vacinas_api.service.VacinaService;
 import jakarta.validation.Valid;
@@ -16,7 +18,6 @@ import br.com.municipio.vacinas.vacinas_api.dto.VacinaResponseDTO;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -39,6 +40,11 @@ public class VacinaController {
     @GetMapping
     public ResponseEntity<List<VacinaResponseDTO>> buscarVacinas() {
         return ResponseEntity.ok(service.buscarVacinas());
+    }
+
+    @PutMapping
+    public ResponseEntity<VacinaResponseDTO> atualizarVacina(@RequestParam("id") String id, @RequestBody VacinaRequestDTO request) {
+        return ResponseEntity.ok(service.editarVacina(request, id));
     }
 
     @DeleteMapping

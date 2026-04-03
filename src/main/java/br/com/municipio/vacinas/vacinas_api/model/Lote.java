@@ -22,7 +22,6 @@ public class Lote {
     @Indexed(unique = true)
     private String numeroLote;
 
-    private String tipo;
     private List<String> fabricante;
 
     private List<String> vacinasAssociadas;
