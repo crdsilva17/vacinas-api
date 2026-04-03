@@ -1,7 +1,9 @@
 package br.com.municipio.vacinas.vacinas_api.model.enums;
 
 public enum Doses {
-    PRIMEIRA_DOSE,
-    SEGUNDA_DOSE,
+    DUAS_DOSES,
+    TRES_DOSES,
+    QUATRO_DOSES,
+    VARIAS_DOSES,
     DOSE_UNICA;
 }
