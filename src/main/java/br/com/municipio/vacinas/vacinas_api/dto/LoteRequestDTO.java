@@ -24,7 +24,5 @@ public class LoteRequestDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate dataValidade;
-    @NotNull
-    private int quantidadeDisponivel;
 
 }

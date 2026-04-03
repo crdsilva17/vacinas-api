@@ -45,7 +45,6 @@ public class VacinaService {
                 lote.setFabricante(Arrays.asList(request.getFabricante()));
                 lote.setDataFabricacao(request.getDataFabricacao());
                 lote.setDataValidade(request.getDataValidade());
-                lote.setQuantidadeDisponivel(request.getQuantidadeDisponivel());
                 lote.setTipo(request.getDescricao());
                 lote.setVacinasAssociadas(Arrays.asList(request.getNome()));
                 loteRepository.save(lote);  

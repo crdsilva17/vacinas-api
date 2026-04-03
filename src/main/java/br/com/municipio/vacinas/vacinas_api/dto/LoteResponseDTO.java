@@ -22,6 +22,5 @@ public class LoteResponseDTO {
     private LocalDate dataFabricacao;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataValidade;
-    private int quantidadeDisponivel;
 
 }
