@@ -18,7 +18,7 @@ public interface LoteMapper {
     Lote toEntity(LoteRequestDTO dto);
 
     @Mapping(target = "fabricante", source = "fabricante")
-    LoteResponseDTO toDTO(Lote entity);
+    LoteResponseDTO toDTO(Lote lote);
 
     List<LoteResponseDTO> toDTOList(List<Lote> entities);
 
