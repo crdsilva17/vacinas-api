@@ -1,16 +1,20 @@
 package br.com.municipio.vacinas.vacinas_api.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.hibernate.validator.constraints.br.CPF;
 
 import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class UsuarioRequestDTO {
+
+@Getter
+@Setter
+public class RegisterRequestDTO {
     
     @NotBlank
     private String localId;
@@ -21,11 +25,11 @@ public class UsuarioRequestDTO {
     private String email;
     @NotBlank
     private String senha;
-    @NotBlank
-    private Date dataNscto;
+    @NotNull
+    private LocalDate dataNscto;
     @NotBlank
     @CPF
     private String cpf;
-    @NotBlank
+    @NotNull
     private Role role;
 }

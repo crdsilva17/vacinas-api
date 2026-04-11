@@ -9,14 +9,20 @@ import lombok.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection="usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     private String id;
@@ -33,12 +39,48 @@ public class Usuario {
     private String senha;
 
     @Field(name="birth_date")
-    private Date dataNscto;
+    private LocalDate dataNscto;
 
     @Indexed(unique = true)
     private String cpf;
 
     @Field(name="role")
     private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
 
 }
