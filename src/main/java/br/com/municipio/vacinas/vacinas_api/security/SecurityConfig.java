@@ -32,11 +32,17 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configure(http))
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                .anyRequest().authenticated())
+                    .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/vacinas").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/vacinas").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/vacinas").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/locais").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/locais").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/locais").hasRole("ADMIN")
+                    .anyRequest().authenticated())
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

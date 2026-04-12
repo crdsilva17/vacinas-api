@@ -3,9 +3,11 @@ package br.com.municipio.vacinas.vacinas_api.security;
 import java.io.IOException;
 import java.util.Optional;
 
+import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,8 +21,12 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final TokenConfig tokenConfig;
 
-    public SecurityFilter(TokenConfig tokenConfig) {
+    private final UsuarioRepository repository;
+
+    public SecurityFilter(TokenConfig tokenConfig, UsuarioRepository repository) {
+
         this.tokenConfig = tokenConfig;
+        this.repository = repository;
     }
 
     @Override
@@ -34,8 +40,11 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             if (userData.isPresent()) {
                 JwtUserData jwtUserData = userData.get();
+                UserDetails user = repository.findById(jwtUserData.userId()).orElseThrow(
+                        () -> new RuntimeException("Usuário não encontrado!")
+                );
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        jwtUserData, null, null);
+                        jwtUserData, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }

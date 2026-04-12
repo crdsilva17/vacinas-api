@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/vacinas/locais")
+@RequestMapping("/api/v1/locais")
 public class LocalController {
 
     private final LocalService service;

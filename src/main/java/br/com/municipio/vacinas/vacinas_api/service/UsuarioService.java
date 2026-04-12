@@ -1,6 +1,7 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
 
+import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,7 @@ public class UsuarioService {
 
     public RegisterResponseDTO register(RegisterRequestDTO request) {
         request.setSenha(passwordEncoder.encode(request.getSenha()));
+        request.setRole(Role.USER);
         Usuario usuario = mapper.toEntity(request);
         usuarioRepository.save(usuario);
         return mapper.toRegisterResponseDTO(usuario);

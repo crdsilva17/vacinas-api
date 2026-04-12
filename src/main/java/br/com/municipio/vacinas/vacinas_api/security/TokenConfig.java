@@ -3,6 +3,7 @@ package br.com.municipio.vacinas.vacinas_api.security;
 import java.time.Instant;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -15,7 +16,8 @@ import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 @Component
 public class TokenConfig {
         // Configurações relacionadas à geração e validação de tokens JWT
-        private String secretKey = "sua_chave_secreta_aqui";
+        @Value("${api.security.key.secret}")
+        private String secretKey;
         private long expirationTime = 86400000; // 1 dia em milissegundos
 
         public String generateToken(Usuario usuario) {
@@ -23,11 +25,12 @@ public class TokenConfig {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
             
             return JWT.create()
-                .withClaim("userId", usuario.getId())
-                .withSubject(usuario.getEmail())
-                .withExpiresAt(Instant.now().plusMillis(expirationTime))
-                .withIssuedAt(Instant.now())
-                .sign(algorithm)
+                    .withIssuer("auth-vacine")
+                    .withClaim("userId", usuario.getId())
+                    .withSubject(usuario.getEmail())
+                    .withExpiresAt(Instant.now().plusMillis(expirationTime))
+                    .withIssuedAt(Instant.now())
+                    .sign(algorithm)
             ; // Retornar o token gerado
 
         }
