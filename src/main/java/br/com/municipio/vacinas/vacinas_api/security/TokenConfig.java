@@ -22,6 +22,9 @@ public class TokenConfig {
 
         public String generateToken(Usuario usuario) {
             // Implementar lógica para gerar um token JWT usando as informações do usuário
+            if (usuario == null) {
+                return null;
+            }
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
             
             return JWT.create()
