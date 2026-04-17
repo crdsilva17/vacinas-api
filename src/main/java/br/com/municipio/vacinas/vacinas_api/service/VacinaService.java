@@ -35,18 +35,17 @@ public class VacinaService {
         * Ele recebe os dados da vacina a ser cadastrada e verifica se já existe uma vacina com as mesmas características (nome, lote, local, fabricante e data de fabricação). 
         * Se já existir, uma exceção é lançada. Caso contrário, o método verifica se o local de vacinação existe e, se não existir, lança outra exceção. 
         * Em seguida, o método verifica se o lote da vacina já existe. Se não existir, um novo lote é criado e salvo no repositório. 
-        * Se o lote já existir, o método atualiza as informações do lote para incluir a nova vacina e fabricante associados a ele. 
-        * Por fim, a nova vacina é salva no repositório e retornada como resposta.    
+        * Por fim, a nova vacina é salva no repositório e retornada como resposta.
     */
     public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
 
-        if (repository.existsByNomeAndLoteAndLocalAndFabricanteAndDataFabricacao(
-                request.getNome(), request.getLote(), request.getLocal(), request.getFabricante(), request.getDataFabricacao())) {
+        if (repository.existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(
+                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(), request.getDataFabricacao())) {
             throw new RuntimeException("Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
         }
         try {
 
-            if (!localRepository.existsByName(request.getLocal())) {
+            if (!localRepository.existsByName(request.getLocalId())) {
 
                 throw new RuntimeException("Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
             }
@@ -94,8 +93,8 @@ public class VacinaService {
     /*
         * O método buscarPorLocal foi implementado para retornar uma lista com as vacinas cadastradas em um local específico.
     */
-    public List<VacinaResponseDTO> buscarPorLocal(String local){
-        return mapper.toDTOList(repository.findByLocal(local));
+    public List<VacinaResponseDTO> buscarPorLocal(String localId){
+        return mapper.toDTOList(repository.findByLocalId(localId));
     }
 
     /*

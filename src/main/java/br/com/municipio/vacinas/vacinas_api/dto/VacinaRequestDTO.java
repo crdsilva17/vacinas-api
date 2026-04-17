@@ -11,7 +11,7 @@ import lombok.Data;
 public class VacinaRequestDTO {
 
     @NotBlank(message = "O campo local é obrigatório")
-    private String local;
+    private String localId;
     @NotBlank(message = "O campo lote é obrigatório")
     private String lote;
     @NotBlank(message = "O campo nome é obrigatório")

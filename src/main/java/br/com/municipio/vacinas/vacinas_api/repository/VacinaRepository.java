@@ -11,9 +11,10 @@ import java.util.List;
 
 public interface VacinaRepository extends MongoRepository<Vacina, String> {
     
-    boolean existsByNomeAndLoteAndLocalAndFabricanteAndDataFabricacao(String nome, String lote, String local, String fabricante, LocalDate dataFabricacao);
+    boolean existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(String nome, String lote, String localId,
+                                                                        String fabricante, LocalDate dataFabricacao);
 
-    List<Vacina> findByLocal(String local);
+    List<Vacina> findByLocalId(String localId);
     List<Vacina> findByLote(String lote);
     List<Vacina> findByNome(String nome);
     List<Vacina> findAllByFabricante(String fabricante);

@@ -25,7 +25,7 @@ public class Vacina {
     @Id
     private String id;
 
-    private String local;
+    private String localId;
     private String lote;
     private String nome;
 
