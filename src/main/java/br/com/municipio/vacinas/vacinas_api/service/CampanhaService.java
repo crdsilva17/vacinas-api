@@ -32,7 +32,7 @@ public class CampanhaService {
      *
      */
     public List<CampanhaResponseDTO> buscarPorLocalId(String localId) {
-        return List.of(mapper.toDTO(repository.findByLocalId(localId)));
+        return repository.findByLocalId(localId).stream().map(mapper::toDTO).toList();
     }
 
     /*
@@ -49,5 +49,9 @@ public class CampanhaService {
      */
     public void excluirCampanha(String id) {
         repository.deleteById(id);
+    }
+
+    public List<CampanhaResponseDTO> buscarTodos() {
+        return repository.findAll().stream().map(mapper::toDTO).toList();
     }
 }
