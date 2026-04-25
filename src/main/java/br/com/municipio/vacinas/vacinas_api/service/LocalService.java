@@ -84,7 +84,7 @@ public class LocalService {
     public void excluirLocalPorId(String id) {
         enderecoRepository.deleteById(repository.findById(id).orElseThrow(() -> new RuntimeException("Endereco não encontrado!")).getEnderecoId());
         
-        vacinaRepository.findByLocal(repository.findById(id).orElseThrow(
+        vacinaRepository.findByLocalId(repository.findById(id).orElseThrow(
             () -> new RuntimeException("Local não encontrado!")
         ).getName()).forEach(vacina -> vacinaService.excluirVacinaPorId(vacina.getId()));
 
@@ -96,7 +96,9 @@ public class LocalService {
             () -> new RuntimeException("Endereço não encontrado!")
         ).getEnderecoId());
 
-        vacinaRepository.findByLocal(name).forEach(vacina -> vacinaService.excluirVacinaPorId(vacina.getId()));
+        vacinaRepository.findByLocalId(repository.findByName(name).orElseThrow(
+                () -> new RuntimeException("Local não encontrado!")
+        ).getId()).forEach(vacina -> vacinaService.excluirVacinaPorId(vacina.getId()));
 
         repository.deleteByName(name);
     }
