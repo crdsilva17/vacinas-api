@@ -54,4 +54,8 @@ public class TokenConfig {
                
             }
         }
+
+        public String getSubject(String token) {
+            return JWT.decode(token).getSubject();
+        }
 }

@@ -44,7 +44,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                         () -> new RuntimeException("Usuário não encontrado!")
                 );
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        jwtUserData, null, user.getAuthorities());
+                        user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }
