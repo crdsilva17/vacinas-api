@@ -3,7 +3,6 @@ package br.com.municipio.vacinas.vacinas_api.controller;
 import br.com.municipio.vacinas.vacinas_api.dto.UsuarioResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.UsuarioMapper;
 import br.com.municipio.vacinas.vacinas_api.model.Usuario;
-import br.com.municipio.vacinas.vacinas_api.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

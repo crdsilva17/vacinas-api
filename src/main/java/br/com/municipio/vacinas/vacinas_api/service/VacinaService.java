@@ -1,6 +1,5 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
