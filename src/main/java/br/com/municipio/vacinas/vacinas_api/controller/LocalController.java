@@ -35,6 +35,11 @@ public class LocalController {
         return ResponseEntity.ok(service.buscarLocalPorId(id));
     }
 
+    @GetMapping("/nome")
+    public ResponseEntity<LocalResponseDTO> buscarPorNome(@RequestParam("nome") String nome) {
+        return ResponseEntity.ok(service.buscarLocalPorNome(nome));
+    }
+
     @GetMapping
     public ResponseEntity<List<LocalResponseDTO>> listarLocais() {
         return ResponseEntity.ok(service.listarLocais());

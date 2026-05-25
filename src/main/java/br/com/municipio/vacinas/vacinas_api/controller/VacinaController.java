@@ -33,9 +33,14 @@ public class VacinaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarVacina(request));
     }
 
-    @GetMapping("/{nome}")
-    public ResponseEntity<List<VacinaResponseDTO>> buscarPorNome(@PathVariable("nome") String nome) {
+    @GetMapping("/nome")
+    public ResponseEntity<List<VacinaResponseDTO>> buscarPorNome(@RequestParam("nome") String nome) {
         return ResponseEntity.ok(service.buscarPorNome(nome));
+    }
+
+    @GetMapping("/local")
+    public ResponseEntity<List<VacinaResponseDTO>> buscarPorLocal(@RequestParam("local") String local) {
+        return ResponseEntity.ok(service.buscarPorLocal(local));
     }
 
     @GetMapping
