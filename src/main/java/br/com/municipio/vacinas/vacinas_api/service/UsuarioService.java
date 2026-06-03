@@ -13,6 +13,7 @@ import br.com.municipio.vacinas.vacinas_api.dto.LoginRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.LoginResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.RegisterRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.RegisterResponseDTO;
+import br.com.municipio.vacinas.vacinas_api.dto.UserRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UsuarioResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.exception.UserRegisterException;
 import br.com.municipio.vacinas.vacinas_api.mapper.UsuarioMapper;
