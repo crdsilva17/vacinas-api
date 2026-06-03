@@ -66,4 +66,8 @@ public class UsuarioService {
         return mapper.toDTO(usuario);
     }
 
+    public void updateUserByEmail(UserRequestDTO user) {
+        
+    }
+
 }
