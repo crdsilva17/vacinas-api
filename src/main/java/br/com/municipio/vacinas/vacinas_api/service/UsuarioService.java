@@ -68,7 +68,7 @@ public class UsuarioService {
         return mapper.toDTO(usuario);
     }
 
-    public void updateUserByEmail(UserRequestDTO user) {
+    public UsuarioResponseDTO updateUserByEmail(UserRequestDTO user) {
         Usuario userModel = (Usuario) usuarioRepository.findByEmail(user.email()).orElseThrow(
             () -> new UserUpdateException("Usuário não encontrado")
         );
@@ -77,6 +77,7 @@ public class UsuarioService {
         userModel.setDataNscto(user.dataNscto());
         try {
             usuarioRepository.save(userModel);
+            return mapper.toDTO(userModel);
         } catch (Exception exception){
             throw new UserUpdateException(exception.toString());
         }
