@@ -17,4 +17,11 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "message", ex.getMessage()));
     }
+
+    @ExceptionHandler(UserUpdateException.class)
+    public ResponseEntity<Map<String, String>> handleUserUpdateException(
+            UserUpdateException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .body(Map.of("message", ex.getMessage()));
+    }
 }

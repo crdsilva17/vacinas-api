@@ -16,6 +16,7 @@ import br.com.municipio.vacinas.vacinas_api.dto.RegisterResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UserRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UsuarioResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.exception.UserRegisterException;
+import br.com.municipio.vacinas.vacinas_api.exception.UserUpdateException;
 import br.com.municipio.vacinas.vacinas_api.mapper.UsuarioMapper;
 import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
@@ -68,7 +69,17 @@ public class UsuarioService {
     }
 
     public void updateUserByEmail(UserRequestDTO user) {
-        
+        Usuario userModel = (Usuario) usuarioRepository.findByEmail(user.email()).orElseThrow(
+            () -> new UserUpdateException("Usuário não encontrado")
+        );
+        userModel.setLocalId(user.local());
+        userModel.setNome(user.nome());
+        userModel.setDataNscto(user.dataNscto());
+        try {
+            usuarioRepository.save(userModel);
+        } catch (Exception exception){
+            throw new UserUpdateException(exception.toString());
+        }
     }
 
 }
