@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import br.com.municipio.vacinas.vacinas_api.repository.NotificationRepository;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
 
