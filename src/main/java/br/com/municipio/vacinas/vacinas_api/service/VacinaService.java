@@ -27,6 +27,7 @@ public class VacinaService {
 
     private final VacinaRepository repository;
     private final LocalRepository localRepository;
+    private final NotificationService notificationService;
     private final VacinaMapper mapper;
 
     /*

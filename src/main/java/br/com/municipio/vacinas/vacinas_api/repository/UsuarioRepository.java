@@ -1,5 +1,7 @@
 package br.com.municipio.vacinas.vacinas_api.repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,5 +18,6 @@ public interface UsuarioRepository extends MongoRepository<Usuario, String> {
 
     Optional<UserDetails> findByCpf(String cpf);
     Optional<UserDetails> findByEmail(String email);
+    List<Usuario> findByDataNsctoBetween(LocalDate minDate, LocalDate maxDate);
 
 }

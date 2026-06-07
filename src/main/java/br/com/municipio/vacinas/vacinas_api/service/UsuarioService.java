@@ -1,6 +1,10 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
 import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,6 +70,11 @@ public class UsuarioService {
                 () -> new RuntimeException("Usuário não encontrado"));
 
         return mapper.toDTO(usuario);
+    }
+
+    public List<UsuarioResponseDTO> getMinMaxUsersAge(LocalDate minDate, LocalDate maxDate) {
+        List<Usuario> usuarios = usuarioRepository.findByDataNsctoBetween(minDate, maxDate);
+        return usuarios.stream().map(mapper::toDTO).toList();
     }
 
     public UsuarioResponseDTO updateUserByEmail(UserRequestDTO user) {
