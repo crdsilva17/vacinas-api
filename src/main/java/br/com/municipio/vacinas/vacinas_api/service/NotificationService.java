@@ -15,42 +15,46 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
+        private final NotificationRepository notificationRepository;
 
-    private final DeviceTokenRepository tokenRepository;
+        private final DeviceTokenRepository tokenRepository;
 
-    private final FirebaseService firebaseService;
+        private final FirebaseService firebaseService;
 
-    public void notifyUser(
-            String userId,
-            String title,
-            String body)
-            throws Exception {
+        public void notifyUser(
+                        String userId,
+                        String title,
+                        String body)
+                        throws Exception {
 
-        Notification notification =
-                new Notification();
+                Notification notification = new Notification();
 
-        notification.setUserId(userId);
-        notification.setTitle(title);
-        notification.setMessage(body);
-        notification.setRead(false);
-        notification.setCreatedAt(
-                LocalDateTime.now());
+                notification.setUserId(userId);
+                notification.setTitle(title);
+                notification.setMessage(body);
+                notification.setRead(false);
+                notification.setCreatedAt(
+                                LocalDateTime.now());
 
-        notificationRepository.save(
-                notification);
+                notificationRepository.save(
+                                notification);
 
-        List<DeviceToken> tokens =
-                tokenRepository.findByUserId(
-                        userId);
+                List<DeviceToken> tokens = tokenRepository.findByUserId(
+                                userId);
 
-        for(DeviceToken token : tokens){
+                for (DeviceToken token : tokens) {
 
-            firebaseService.sendNotification(
-                    token.getToken(),
-                    title,
-                    body
-            );
+                        firebaseService.sendNotification(
+                                        token.getToken(),
+                                        title,
+                                        body);
+                }
         }
-    }
+
+        public List<Notification> getUserNotifications(
+                        String userId) {
+
+                return notificationRepository.findByUserId(
+                                userId);
+        }
 }

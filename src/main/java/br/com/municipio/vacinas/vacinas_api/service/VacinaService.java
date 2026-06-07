@@ -9,7 +9,8 @@ import com.mongodb.DuplicateKeyException;
 import lombok.RequiredArgsConstructor;
 
 import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
-
+import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
+import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
@@ -27,29 +28,49 @@ public class VacinaService {
 
     private final VacinaRepository repository;
     private final LocalRepository localRepository;
+    private final UsuarioRepository userRepository;
     private final NotificationService notificationService;
     private final VacinaMapper mapper;
 
     /*
-        * O método cadastrarVacina foi implementado para permitir o cadastro de uma nova vacina. 
-        * Ele recebe os dados da vacina a ser cadastrada e verifica se já existe uma vacina com as mesmas características (nome, lote, local, fabricante e data de fabricação). 
-        * Se já existir, uma exceção é lançada. Caso contrário, o método verifica se o local de vacinação existe e, se não existir, lança outra exceção. 
-        * Em seguida, o método verifica se o lote da vacina já existe. Se não existir, um novo lote é criado e salvo no repositório. 
-        * Por fim, a nova vacina é salva no repositório e retornada como resposta.
-    */
+     * O método cadastrarVacina foi implementado para permitir o cadastro de uma
+     * nova vacina.
+     * Ele recebe os dados da vacina a ser cadastrada e verifica se já existe uma
+     * vacina com as mesmas características (nome, lote, local, fabricante e data de
+     * fabricação).
+     * Se já existir, uma exceção é lançada. Caso contrário, o método verifica se o
+     * local de vacinação existe e, se não existir, lança outra exceção.
+     * Em seguida, o método verifica se o lote da vacina já existe. Se não existir,
+     * um novo lote é criado e salvo no repositório.
+     * Por fim, a nova vacina é salva no repositório e retornada como resposta.
+     */
     public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
 
         if (repository.existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(
-                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(), request.getDataFabricacao())) {
-            throw new RuntimeException("Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
+                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(),
+                request.getDataFabricacao())) {
+            throw new RuntimeException(
+                    "Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
         }
         try {
 
             if (!localRepository.existsByName(request.getLocalId())) {
 
-                throw new RuntimeException("Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
+                throw new RuntimeException(
+                        "Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
             }
-
+            List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
+                    request.getIdadeMaxima());
+            for (Usuario usuario : usuarios) {
+                try {
+                    notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
+                            "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
+                                    + request.getLocalId()
+                                    + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             return mapper.toDTO(repository.save(mapper.toEntity(request)));
 
         } catch (DuplicateKeyException e) {
@@ -58,24 +79,45 @@ public class VacinaService {
     }
 
     /*
-        * O método editarVacina foi implementado para permitir a edição de uma vacina existente. 
-        * Ele recebe os dados atualizados da vacina e o ID da vacina a ser editada.
-        * Por fim, a vacina editada é salva no repositório e retornada como resposta.
-    */
+     * O método editarVacina foi implementado para permitir a edição de uma vacina
+     * existente.
+     * Ele recebe os dados atualizados da vacina e o ID da vacina a ser editada.
+     * Por fim, a vacina editada é salva no repositório e retornada como resposta.
+     */
     public VacinaResponseDTO editarVacina(VacinaRequestDTO request, String id) {
         Vacina vacina = mapper.toEntity(request);
 
         vacina.setId(id);
 
+        if (repository.existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(
+                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(),
+                request.getDataFabricacao())) {
+            throw new RuntimeException(
+                    "Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
+        }
+
+        List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
+                request.getIdadeMaxima());
+        for (Usuario usuario : usuarios) {
+            try {
+                notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
+                        "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
+                                + request.getLocalId()
+                                + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return mapper.toDTO(repository.save(vacina));
     }
 
-
-
     /*
-        * O método excluirVacinaPorId foi implementado para excluir uma vacina com base no seu ID. 
-        * Ele verifica se a vacina existe e, em seguida, remove a vacina do repositório.
-    */
+     * O método excluirVacinaPorId foi implementado para excluir uma vacina com base
+     * no seu ID.
+     * Ele verifica se a vacina existe e, em seguida, remove a vacina do
+     * repositório.
+     */
     public void excluirVacinaPorId(String id) {
         if (!repository.existsById(id)) {
             throw new RuntimeException("Vacina não encontrada!");
@@ -84,30 +126,34 @@ public class VacinaService {
     }
 
     /*
-        * O método buscarVacinas foi implementado para retornar uma lista com todas as vacinas cadastradas.
-    */
+     * O método buscarVacinas foi implementado para retornar uma lista com todas as
+     * vacinas cadastradas.
+     */
     public List<VacinaResponseDTO> buscarVacinas() {
         return mapper.toDTOList(repository.findAll());
     }
 
     /*
-        * O método buscarPorLocal foi implementado para retornar uma lista com as vacinas cadastradas em um local específico.
-    */
-    public List<VacinaResponseDTO> buscarPorLocal(String localId){
+     * O método buscarPorLocal foi implementado para retornar uma lista com as
+     * vacinas cadastradas em um local específico.
+     */
+    public List<VacinaResponseDTO> buscarPorLocal(String localId) {
         return mapper.toDTOList(repository.findByLocalId(localId));
     }
 
     /*
-        * O método buscarPorLote foi implementado para retornar uma lista com as vacinas cadastradas em um lote específico.
-    */
-    public List<VacinaResponseDTO> buscarPorLote(String lote){
+     * O método buscarPorLote foi implementado para retornar uma lista com as
+     * vacinas cadastradas em um lote específico.
+     */
+    public List<VacinaResponseDTO> buscarPorLote(String lote) {
         return mapper.toDTOList(repository.findByLote(lote));
     }
 
     /*
-        * O método buscarPorNome foi implementado para retornar uma lista com as vacinas cadastradas com um nome específico.
-    */
-    public List<VacinaResponseDTO> buscarPorNome(String nome){
+     * O método buscarPorNome foi implementado para retornar uma lista com as
+     * vacinas cadastradas com um nome específico.
+     */
+    public List<VacinaResponseDTO> buscarPorNome(String nome) {
         return mapper.toDTOList(repository.findByNome(nome));
     }
 
