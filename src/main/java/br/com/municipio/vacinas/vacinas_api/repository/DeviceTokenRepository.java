@@ -1,6 +1,7 @@
 package br.com.municipio.vacinas.vacinas_api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,5 @@ public interface DeviceTokenRepository
         extends MongoRepository<DeviceToken,String>{
 
     List<DeviceToken> findByUserId(String userId);
+    Optional<DeviceToken> findByToken(String token);
 }
