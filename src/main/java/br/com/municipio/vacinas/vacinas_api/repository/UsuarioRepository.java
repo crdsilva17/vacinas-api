@@ -4,10 +4,11 @@ import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Repository;
 
 import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 
-
+@Repository
 public interface UsuarioRepository extends MongoRepository<Usuario, String> {
     
     boolean existsByEmail(String email);
