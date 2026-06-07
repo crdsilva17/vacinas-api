@@ -7,7 +7,6 @@ import br.com.municipio.vacinas.vacinas_api.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
