@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.municipio.vacinas.vacinas_api.dto.DeviceTokenRequest;
-import br.com.municipio.vacinas.vacinas_api.model.DeviceToken;
-import br.com.municipio.vacinas.vacinas_api.repository.DeviceTokenRepository;
+import br.com.municipio.vacinas.vacinas_api.service.DeviceTokenService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -16,22 +16,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DeviceTokenController {
 
-    private final DeviceTokenRepository repository;
+    private final DeviceTokenService service;
 
     @PostMapping
-    public void saveToken(
+    public ResponseEntity<Void> registerToken(
             @RequestBody DeviceTokenRequest request,
-            Authentication authentication){
+            Authentication authentication) {
 
-        DeviceToken token =
-                new DeviceToken();
+        String userId =
+                authentication.getName();
 
-        token.setUserId(
-                authentication.getName());
-
-        token.setToken(
+        service.saveToken(
+                userId,
                 request.token());
 
-        repository.save(token);
+        return ResponseEntity.ok().build();
     }
 }
