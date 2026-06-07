@@ -12,7 +12,7 @@ import br.com.municipio.vacinas.vacinas_api.service.DeviceTokenService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/device-token")
+@RequestMapping("/api/v1/device-token")
 @RequiredArgsConstructor
 public class DeviceTokenController {
 
