@@ -31,163 +31,206 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AgendamentoService {
 
-    private static final Logger log = LoggerFactory.getLogger(AgendamentoService.class);
+        private static final Logger log = LoggerFactory.getLogger(AgendamentoService.class);
 
-    private final AgendamentoRepository repository;
-    private final UsuarioService userRepository;
-    private final VacinaRepository vacinaRepository;
-    private final LocalRepository localRepository;
-    private final UsuarioMapper mapper;
-    private final NotificationService notificationService;
+        private final AgendamentoRepository repository;
+        private final UsuarioService userRepository;
+        private final VacinaRepository vacinaRepository;
+        private final LocalRepository localRepository;
+        private final UsuarioMapper mapper;
+        private final NotificationService notificationService;
 
-    private LocalTime[] parseHorario(
-            String horarioFuncionamento) {
+        private LocalTime[] parseHorario(
+                        String horarioFuncionamento) {
 
-        String[] partes = horarioFuncionamento.split("-");
+                String[] partes = horarioFuncionamento.split("-");
 
-        LocalTime abertura = LocalTime.parse(
-                partes[0].trim());
+                LocalTime abertura = LocalTime.parse(
+                                partes[0].trim());
 
-        LocalTime fechamento = LocalTime.parse(
-                partes[1].trim());
+                LocalTime fechamento = LocalTime.parse(
+                                partes[1].trim());
 
-        return new LocalTime[] {
-                abertura,
-                fechamento
-        };
-    }
-
-    private List<LocalTime> gerarHorarios(
-            LocalTime abertura,
-            LocalTime fechamento) {
-
-        List<LocalTime> horarios = new ArrayList<>();
-
-        LocalTime atual = abertura;
-
-        while (atual.isBefore(fechamento)) {
-
-            horarios.add(atual);
-
-            atual = atual.plusMinutes(30);
+                return new LocalTime[] {
+                                abertura,
+                                fechamento
+                };
         }
 
-        return horarios;
-    }
+        private List<LocalTime> gerarHorarios(
+                        LocalTime abertura,
+                        LocalTime fechamento) {
 
-    public List<LocalTime> horariosDisponiveis(
-            String localId,
-            LocalDate data) {
+                List<LocalTime> horarios = new ArrayList<>();
 
-        LocalVacina local = localRepository
-                .findById(localId)
-                .orElseThrow();
+                LocalTime atual = abertura;
 
-        LocalTime[] horario = parseHorario(
-                local.getHorarioFuncionamento());
+                while (atual.isBefore(fechamento)) {
 
-        List<LocalTime> todos = gerarHorarios(
-                horario[0],
-                horario[1]);
+                        horarios.add(atual);
 
-        List<Agendamento> ocupados = repository.findByLocalIdAndData(
-                localId,
-                data);
+                        atual = atual.plusMinutes(30);
+                }
 
-        Set<LocalTime> horariosOcupados = ocupados.stream()
-                .map(
-                        Agendamento::getHorario)
-                .collect(
-                        Collectors.toSet());
-
-        return todos.stream()
-                .filter(
-                        h -> !horariosOcupados.contains(h))
-                .toList();
-    }
-
-    @Transactional
-    public void agendar(
-            String userEmail,
-            AgendamentoRequestDTO dto) {
-
-        Usuario usuario = mapper.toUser(userRepository.getUserByEmail(userEmail));
-
-        Vacina vacina = vacinaRepository
-                .findById(dto.vacinaId())
-                .orElseThrow(() -> new RuntimeException("Vacina não encontrada."));
-
-        LocalVacina local = localRepository
-                .findById(dto.localId())
-                .orElseThrow(() -> new RuntimeException("UBS não encontrada."));
-
-        if (dto.data().isBefore(LocalDate.now())) {
-            throw new RuntimeException(
-                    "Não é permitido agendar datas passadas.");
+                return horarios;
         }
 
-        LocalTime[] horarioFuncionamento = parseHorario(local.getHorarioFuncionamento());
+        public List<LocalTime> horariosDisponiveis(
+                        String localId,
+                        LocalDate data) {
 
-        LocalTime abertura = horarioFuncionamento[0];
-        LocalTime fechamento = horarioFuncionamento[1];
+                LocalVacina local = localRepository
+                                .findById(localId)
+                                .orElseThrow();
 
-        if (dto.horario().isBefore(abertura)
-                || dto.horario().isAfter(fechamento)) {
+                LocalTime[] horario = parseHorario(
+                                local.getHorarioFuncionamento());
 
-            throw new RuntimeException(
-                    "Horário fora do funcionamento da UBS.");
+                List<LocalTime> todos = gerarHorarios(
+                                horario[0],
+                                horario[1]);
+
+                List<Agendamento> ocupados = repository.findByLocalIdAndData(
+                                localId,
+                                data);
+
+                Set<LocalTime> horariosOcupados = ocupados.stream()
+                                .map(
+                                                Agendamento::getHorario)
+                                .collect(
+                                                Collectors.toSet());
+
+                return todos.stream()
+                                .filter(
+                                                h -> !horariosOcupados.contains(h))
+                                .toList();
         }
 
-        boolean ocupado = repository
-                .existsByLocalIdAndDataAndHorarioAndStatus(
-                        dto.localId(),
-                        dto.data(),
-                        dto.horario(),
-                        StatusAgendamento.AGENDADO);
+        public boolean possuiAgendamento(
+                        String userEmail,
+                        String vacinaId) {
 
-        if (ocupado) {
-            throw new RuntimeException(
-                    "Este horário já foi reservado.");
+                Usuario usuario = mapper.toUser(userRepository.getUserByEmail(userEmail));
+
+                return repository
+                                .findByUsuarioIdAndVacinaIdAndStatus(
+                                                usuario.getId(),
+                                                vacinaId,
+                                                StatusAgendamento.AGENDADO)
+                                .isPresent();
         }
 
-        Agendamento agendamento = new Agendamento();
+        @Transactional
+        public void agendar(
+                        String userEmail,
+                        AgendamentoRequestDTO dto) {
 
-        agendamento.setUsuarioId(usuario.getId());
+                Usuario usuario = mapper.toUser(userRepository.getUserByEmail(userEmail));
 
-        agendamento.setVacinaId(vacina.getId());
+                Vacina vacina = vacinaRepository
+                                .findById(dto.vacinaId())
+                                .orElseThrow(() -> new RuntimeException("Vacina não encontrada."));
 
-        agendamento.setLocalId(local.getId());
+                LocalVacina local = localRepository
+                                .findById(dto.localId())
+                                .orElseThrow(() -> new RuntimeException("UBS não encontrada."));
 
-        agendamento.setData(dto.data());
+                if (dto.data().isBefore(LocalDate.now())) {
+                        throw new RuntimeException(
+                                        "Não é permitido agendar datas passadas.");
+                }
 
-        agendamento.setHorario(dto.horario());
+                LocalTime[] horarioFuncionamento = parseHorario(local.getHorarioFuncionamento());
 
-        agendamento.setStatus(
-                StatusAgendamento.AGENDADO);
+                LocalTime abertura = horarioFuncionamento[0];
+                LocalTime fechamento = horarioFuncionamento[1];
 
-        agendamento.setCreatedAt(
-                LocalDateTime.now());
+                if (dto.horario().isBefore(abertura)
+                                || dto.horario().isAfter(fechamento)) {
 
-        repository.save(
-                agendamento);
+                        throw new RuntimeException(
+                                        "Horário fora do funcionamento da UBS.");
+                }
 
-        try {
+                boolean ocupado = repository
+                                .existsByLocalIdAndDataAndHorarioAndStatus(
+                                                dto.localId(),
+                                                dto.data(),
+                                                dto.horario(),
+                                                StatusAgendamento.AGENDADO);
 
-            notificationService.notifyUser(
-                    usuario.getEmail(),
-                    "Vacinação agendada",
-                    "Sua vacinação foi agendada para "
-                            + dto.data()
-                            + " às "
-                            + dto.horario()
-                            + " na UBS "
-                            + local.getName());
+                if (ocupado) {
+                        throw new RuntimeException(
+                                        "Este horário já foi reservado.");
+                }
 
-        } catch (Exception e) {
+                Agendamento agendamento = new Agendamento();
 
-            log.error(
-                    "Erro ao enviar notificação de agendamento",
-                    e);
+                agendamento.setUsuarioId(usuario.getId());
+
+                agendamento.setVacinaId(vacina.getId());
+
+                agendamento.setLocalId(local.getId());
+
+                agendamento.setData(dto.data());
+
+                agendamento.setHorario(dto.horario());
+
+                agendamento.setStatus(
+                                StatusAgendamento.AGENDADO);
+
+                agendamento.setCreatedAt(
+                                LocalDateTime.now());
+
+                repository.save(
+                                agendamento);
+
+                try {
+
+                        notificationService.notifyUser(
+                                        usuario.getEmail(),
+                                        "Vacinação agendada",
+                                        "Sua vacinação foi agendada para "
+                                                        + dto.data()
+                                                        + " às "
+                                                        + dto.horario()
+                                                        + " na UBS "
+                                                        + local.getName());
+
+                } catch (Exception e) {
+
+                        log.error(
+                                        "Erro ao enviar notificação de agendamento",
+                                        e);
+                }
         }
-    }
+
+        public void cancelar(
+                        String userEmail,
+                        String vacinaId) {
+
+                Usuario usuario = mapper.toUser(userRepository.getUserByEmail(userEmail));
+
+                Agendamento agendamento = repository
+                                .findByUsuarioIdAndVacinaIdAndStatus(
+                                                usuario.getId(),
+                                                vacinaId,
+                                                StatusAgendamento.AGENDADO)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Agendamento não encontrado"));
+
+                agendamento.setStatus(
+                                StatusAgendamento.CANCELADO);
+
+                repository.save(agendamento);
+
+                try {
+                        notificationService.notifyUser(
+                                        usuario.getEmail(),
+                                        "Agendamento cancelado",
+                                        "Seu agendamento foi cancelado.");
+                } catch (Exception e) {
+                        log.error("Erro ao enviar notificação de cancelamento", e);
+                }
+        }
 }
