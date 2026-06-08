@@ -91,8 +91,10 @@ public class VacinaService {
 
         List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
                 request.getIdadeMaxima());
+        System.out.println("Usuários encontrados para notificação: " + usuarios.size());
         for (Usuario usuario : usuarios) {
             try {
+                System.out.println("Enviando notificação para o usuário: " + usuario.getId());
                 notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
                         "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
                                 + request.getLocalId()

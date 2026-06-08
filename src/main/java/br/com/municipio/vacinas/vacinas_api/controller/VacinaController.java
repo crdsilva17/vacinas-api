@@ -29,6 +29,7 @@ public class VacinaController {
 
     @PostMapping
     public ResponseEntity<VacinaResponseDTO> cadastrarVacina(@Valid @RequestBody VacinaRequestDTO request) {
+        System.out.println("Recebendo requisição para cadastrar vacina: " + request);
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarVacina(request));
     }
 
@@ -49,6 +50,7 @@ public class VacinaController {
 
     @PutMapping
     public ResponseEntity<VacinaResponseDTO> atualizarVacina(@RequestParam("id") String id, @RequestBody VacinaRequestDTO request) {
+        System.out.println("ID recebido para atualização: " + id);
         return ResponseEntity.ok(service.editarVacina(request, id));
     }
 

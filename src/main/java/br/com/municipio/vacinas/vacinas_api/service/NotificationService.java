@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.checkerframework.checker.units.qual.s;
 import org.springframework.stereotype.Service;
 
 @Service
