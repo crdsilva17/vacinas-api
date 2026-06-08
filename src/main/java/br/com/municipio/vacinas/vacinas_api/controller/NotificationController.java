@@ -31,7 +31,7 @@ public class NotificationController {
 
     @PatchMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(
-            @PathVariable String id) {
+            @PathVariable String id)  {
 
         Notification notification = notificationRepository
                 .findById(id)
