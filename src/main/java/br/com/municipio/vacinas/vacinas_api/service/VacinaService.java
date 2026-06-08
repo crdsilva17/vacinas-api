@@ -89,13 +89,6 @@ public class VacinaService {
 
         vacina.setId(id);
 
-        if (repository.existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(
-                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(),
-                request.getDataFabricacao())) {
-            throw new RuntimeException(
-                    "Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
-        }
-
         List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
                 request.getIdadeMaxima());
         for (Usuario usuario : usuarios) {

@@ -60,6 +60,10 @@ public class Usuario implements UserDetails {
         return email;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

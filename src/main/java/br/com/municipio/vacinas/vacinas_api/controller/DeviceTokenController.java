@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.municipio.vacinas.vacinas_api.dto.DeviceTokenRequest;
+import br.com.municipio.vacinas.vacinas_api.exception.UserUpdateException;
+import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
 import br.com.municipio.vacinas.vacinas_api.service.DeviceTokenService;
 import lombok.RequiredArgsConstructor;
 
@@ -16,20 +18,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DeviceTokenController {
 
-    private final DeviceTokenService service;
+        private final DeviceTokenService service;
+        private final UsuarioRepository userRepository;
 
-    @PostMapping
-    public ResponseEntity<Void> registerToken(
-            @RequestBody DeviceTokenRequest request,
-            Authentication authentication) {
+        @PostMapping
+        public ResponseEntity<Void> registerToken(
+                        @RequestBody DeviceTokenRequest request,
+                        Authentication authentication) {
 
-        String userId =
-                authentication.getName();
+                String userId = userRepository.findUserByEmail(authentication.getName())
+                                .orElseThrow(() -> new UserUpdateException("Usuário não encontrado!"))
+                                .getId();
 
-        service.saveToken(
-                userId,
-                request.token());
+                service.saveToken(
+                                userId,
+                                request.token());
 
-        return ResponseEntity.ok().build();
-    }
+                return ResponseEntity.ok().build();
+        }
 }

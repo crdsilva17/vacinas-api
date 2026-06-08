@@ -20,6 +20,10 @@ public interface UsuarioRepository extends MongoRepository<Usuario, String> {
 
     Optional<UserDetails> findByEmail(String email);
 
+    Optional<Usuario> findById(String id);
+
+    Optional<Usuario> findUserByEmail(String email);
+
     List<Usuario> findByDataNsctoBetween(int minDate, int maxDate);
 
 }
