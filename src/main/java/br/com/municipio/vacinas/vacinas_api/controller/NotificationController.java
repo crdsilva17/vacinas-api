@@ -2,6 +2,8 @@ package br.com.municipio.vacinas.vacinas_api.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,19 @@ public class NotificationController {
 
     private final NotificationRepository notificationRepository;
     private final UsuarioRepository usuarioRepository;
+
+    @GetMapping
+    public ResponseEntity<List<Notification>> getNotifications(Authentication authentication) {
+
+        List<Notification> notifications = notificationRepository
+                .findByUserId(
+                        usuarioRepository
+                                .findUserByEmail(authentication.getName())
+                                .orElseThrow()
+                                .getId());
+
+        return ResponseEntity.ok(notifications);
+    }
 
     @GetMapping("/count")
     public long count(Authentication authentication) {
