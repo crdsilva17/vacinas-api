@@ -28,9 +28,6 @@ public class NotificationService {
                         throws Exception {
 
                 Notification notification = new Notification();
-
-                System.out.println("Enviando notificação para o usuário: " + userId);
-
                 notification.setUserId(userId);
                 notification.setTitle(title);
                 notification.setMessage(body);
@@ -45,7 +42,6 @@ public class NotificationService {
                                 userId);
 
                 for (DeviceToken token : tokens) {
-                        System.out.println("Enviando notificação para o token: " + token.getToken());
                         firebaseService.sendNotification(
                                         token.getToken(),
                                         title,
