@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -59,8 +60,10 @@ public class VacinaService {
                 throw new RuntimeException(
                         "Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
             }
-            List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
-                    request.getIdadeMaxima());
+            LocalDate hoje = LocalDate.now();
+            LocalDate dataInicial = hoje.minusYears(request.getIdadeMaxima() + 1).plusDays(1);
+            LocalDate dataFinal = hoje.minusYears(request.getIdadeMinima());
+            List<Usuario> usuarios = userRepository.findByDataNsctoBetween(dataInicial, dataFinal);
             for (Usuario usuario : usuarios) {
                 try {
                     notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
@@ -89,8 +92,16 @@ public class VacinaService {
 
         vacina.setId(id);
 
-        List<Usuario> usuarios = userRepository.findByDataNsctoBetween(request.getIdadeMinima(),
-                request.getIdadeMaxima());
+        LocalDate hoje = LocalDate.now();
+
+        LocalDate dataInicial = hoje.minusYears(
+                request.getIdadeMaxima() + 1)
+                .plusDays(1);
+
+        LocalDate dataFinal = hoje.minusYears(
+                request.getIdadeMinima());
+
+        List<Usuario> usuarios = userRepository.findByDataNsctoBetween(dataInicial, dataFinal);
         System.out.println("Usuários encontrados para notificação: " + usuarios.size());
         for (Usuario usuario : usuarios) {
             try {

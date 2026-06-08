@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,6 @@ public interface UsuarioRepository extends MongoRepository<Usuario, String> {
 
     Optional<Usuario> findUserByEmail(String email);
 
-    List<Usuario> findByDataNsctoBetween(int minDate, int maxDate);
+    List<Usuario> findByDataNsctoBetween(LocalDate dataInicial, LocalDate dataFinal);
 
 }
