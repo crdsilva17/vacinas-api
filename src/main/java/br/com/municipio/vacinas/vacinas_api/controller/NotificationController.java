@@ -1,9 +1,12 @@
 package br.com.municipio.vacinas.vacinas_api.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import br.com.municipio.vacinas.vacinas_api.model.Notification;
 import br.com.municipio.vacinas.vacinas_api.repository.NotificationRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
 
@@ -23,7 +26,23 @@ public class NotificationController {
                         usuarioRepository
                                 .findUserByEmail(authentication.getName())
                                 .orElseThrow()
-                                .getId()
-                );
+                                .getId());
+    }
+
+    @PatchMapping("/{id}/read")
+    public ResponseEntity<Void> markAsRead(
+            @PathVariable String id) {
+
+        Notification notification = notificationRepository
+                .findById(id)
+                .orElseThrow();
+
+        notification.setRead(true);
+
+        notificationRepository
+                .save(notification);
+
+        return ResponseEntity.ok()
+                .build();
     }
 }
