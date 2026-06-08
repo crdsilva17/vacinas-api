@@ -2,6 +2,7 @@ package br.com.municipio.vacinas.vacinas_api.service;
 
 import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -72,7 +73,10 @@ public class UsuarioService {
     }
 
     public List<UsuarioResponseDTO> getMinMaxUsersAge(int minDate, int maxDate) {
-        List<Usuario> usuarios = usuarioRepository.findByDataNsctoBetween(minDate, maxDate);
+        LocalDate hoje = LocalDate.now();
+        LocalDate dataInicial = hoje.minusYears(maxDate + 1).plusDays(1);
+        LocalDate dataFinal = hoje.minusYears(minDate);
+        List<Usuario> usuarios = usuarioRepository.findByDataNsctoBetween(dataInicial, dataFinal);
         return usuarios.stream().map(mapper::toDTO).toList();
     }
 
