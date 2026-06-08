@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.checkerframework.checker.units.qual.s;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +30,8 @@ public class NotificationService {
 
                 Notification notification = new Notification();
 
+                System.out.println("Enviando notificação para o usuário: " + userId);
+
                 notification.setUserId(userId);
                 notification.setTitle(title);
                 notification.setMessage(body);
@@ -43,7 +46,7 @@ public class NotificationService {
                                 userId);
 
                 for (DeviceToken token : tokens) {
-
+                        System.out.println("Enviando notificação para o token: " + token.getToken());
                         firebaseService.sendNotification(
                                         token.getToken(),
                                         title,
