@@ -188,7 +188,7 @@ public class AgendamentoService {
                 try {
 
                         notificationService.notifyUser(
-                                        usuario.getEmail(),
+                                        usuario.getId(),
                                         "Vacinação agendada",
                                         "Sua vacinação foi agendada para "
                                                         + dto.data()
@@ -226,7 +226,7 @@ public class AgendamentoService {
 
                 try {
                         notificationService.notifyUser(
-                                        usuario.getEmail(),
+                                        usuario.getId(),
                                         "Agendamento cancelado",
                                         "Seu agendamento foi cancelado.");
                 } catch (Exception e) {
