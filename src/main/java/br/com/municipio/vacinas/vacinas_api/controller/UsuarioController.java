@@ -28,6 +28,7 @@ public class UsuarioController {
 
     @PutMapping
     public ResponseEntity<UsuarioResponseDTO> updateUser(UserRequestDTO request) {
+        System.out.println("Atualizando usuário: " + request);
         System.out.println(request.email());
         return ResponseEntity.ok(service.updateUserByEmail(request));
 
