@@ -17,6 +17,10 @@ public interface UsuarioMapper {
     @Mapping(target = "authorities", ignore = true)
     Usuario toEntity(RegisterRequestDTO dto);
 
+    @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "senha", ignore = true)
+    Usuario toUser(UsuarioResponseDTO dto);
+
     LoginResponseDTO toLoginResponseDTO(String token);
     
     UsuarioResponseDTO toDTO(Usuario entity);
