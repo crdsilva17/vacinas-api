@@ -70,7 +70,17 @@ public class VacinaService {
                             "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
                                     + request.getLocalId()
                                     + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
+                } catch (com.google.firebase.messaging.FirebaseMessagingException e) {
+                    System.err.println("Erro do Firebase para o usuário " + usuario.getId() + ": " + e.getMessage());
+                    // RECOMENDÁVEL: Se o erro for 'Requested entity was not found', limpe o token
+                    // desse usuário no banco
+                    if ("registration-token-not-registered".equals(e.getMessagingErrorCode().name())
+                            || e.getMessage().contains("not found")) {
+                        // usuario.setFirebaseToken(null);
+                        // userRepository.save(usuario);
+                    }
                 } catch (Exception e) {
+                    System.err.println("Outro erro inesperado para o usuário " + usuario.getId());
                     e.printStackTrace();
                 }
             }
@@ -110,7 +120,17 @@ public class VacinaService {
                         "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
                                 + request.getLocalId()
                                 + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
+            } catch (com.google.firebase.messaging.FirebaseMessagingException e) {
+                System.err.println("Erro do Firebase para o usuário " + usuario.getId() + ": " + e.getMessage());
+                // RECOMENDÁVEL: Se o erro for 'Requested entity was not found', limpe o token
+                // desse usuário no banco
+                if ("registration-token-not-registered".equals(e.getMessagingErrorCode().name())
+                        || e.getMessage().contains("not found")) {
+                    // usuario.setFirebaseToken(null);
+                    // userRepository.save(usuario);
+                }
             } catch (Exception e) {
+                System.err.println("Outro erro inesperado para o usuário " + usuario.getId());
                 e.printStackTrace();
             }
         }
