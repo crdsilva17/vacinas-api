@@ -222,7 +222,7 @@ public class AgendamentoService {
                 agendamento.setStatus(
                                 StatusAgendamento.CANCELADO);
 
-                repository.save(agendamento);
+                repository.delete(agendamento);
 
                 try {
                         notificationService.notifyUser(
