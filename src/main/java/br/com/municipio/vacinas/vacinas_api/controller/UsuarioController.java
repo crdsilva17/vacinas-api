@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.controller;
 
+import br.com.municipio.vacinas.vacinas_api.dto.PasswordRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UserRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UsuarioResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.UsuarioMapper;
@@ -31,5 +32,10 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> updateUser(@RequestBody UserRequestDTO request) {
         return ResponseEntity.ok(service.updateUserByEmail(request));
 
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<UsuarioResponseDTO> changePassword(@RequestBody PasswordRequestDTO request) {
+        return ResponseEntity.ok(service.changePassword(request));
     }
 }

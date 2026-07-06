@@ -5,6 +5,7 @@ import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import com.mongodb.DuplicateKeyException;
 
 import br.com.municipio.vacinas.vacinas_api.dto.LoginRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.LoginResponseDTO;
+import br.com.municipio.vacinas.vacinas_api.dto.PasswordRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.RegisterRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.RegisterResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.UserRequestDTO;
@@ -86,6 +88,23 @@ public class UsuarioService {
         userModel.setLocalId(user.local());
         userModel.setNome(user.nome());
         userModel.setDataNscto(user.dataNscto());
+        try {
+            usuarioRepository.save(userModel);
+            return mapper.toDTO(userModel);
+        } catch (Exception exception) {
+            throw new UserUpdateException(exception.toString());
+        }
+    }
+
+    public UsuarioResponseDTO changePassword(PasswordRequestDTO request) {
+        Usuario userModel = (Usuario) usuarioRepository.findByEmail(request.email()).orElseThrow(
+                () -> new UserUpdateException("Usuário não encontrado"));
+
+        if (!passwordEncoder.matches(request.oldPassword(), userModel.getSenha())) {
+            throw new UserUpdateException("Senha antiga incorreta");
+        }
+
+        userModel.setSenha(passwordEncoder.encode(request.newPassword()));
         try {
             usuarioRepository.save(userModel);
             return mapper.toDTO(userModel);
