@@ -5,7 +5,6 @@ import br.com.municipio.vacinas.vacinas_api.model.enums.Role;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
