@@ -32,7 +32,7 @@ public class CampanhaService {
      *
      */
     public List<CampanhaResponseDTO> buscarPorLocalId(String localId) {
-        return repository.findByLocalId(localId).stream().map(mapper::toDTO).toList();
+        return repository.findByLocalIds(localId).get().stream().map(mapper::toDTO).toList();
     }
 
     /*

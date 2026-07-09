@@ -5,6 +5,8 @@ import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,8 +22,10 @@ public class CampanhaVacinacao {
     @NonNull
     private List<String> localIds;
     @NonNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataInicio;
     @NonNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataFim;
     private String ageMin;
     private String ageMax;
