@@ -10,17 +10,11 @@ import lombok.Data;
 @Data
 public class VacinaRequestDTO {
 
-    @NotBlank(message = "O campo local é obrigatório")
-    private String localId;
     @NotBlank(message = "O campo lote é obrigatório")
     private String lote;
     @NotBlank(message = "O campo nome é obrigatório")
     private String nome;
 
-    @NotNull(message = "O campo idade mínima é obrigatório")
-    private int idadeMinima;
-    @NotNull(message = "O campo idade máxima é obrigatório")
-    private int idadeMaxima;
     @NotNull(message = "O campo doses é obrigatório")
     private Doses doses;
 
@@ -32,7 +26,5 @@ public class VacinaRequestDTO {
     private LocalDate dataFabricacao;
     @NotNull(message = "O campo data de validade é obrigatório")
     private LocalDate dataValidade;
-    @NotNull(message = "O campo quantidade disponível é obrigatório")
-    private int quantidadeDisponivel;
     
 }

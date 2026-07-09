@@ -9,18 +9,14 @@ import lombok.Data;
 public class VacinaResponseDTO {
 
     private String id;
-    private String localId;
     private String lote;
 
     private String nome;
-    private int idadeMinima;
-    private int idadeMaxima;
     private Doses doses;
 
     private String descricao;
     private String fabricante;
     private LocalDate dataFabricacao;
     private LocalDate dataValidade;
-    private int quantidadeDisponivel;
 
 }

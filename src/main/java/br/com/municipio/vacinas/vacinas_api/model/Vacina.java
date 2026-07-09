@@ -13,7 +13,7 @@ import br.com.municipio.vacinas.vacinas_api.model.enums.Doses;
 import lombok.*;
 
 @CompoundIndexes({
-    @CompoundIndex(name = "nome_lote_local_fabricante_dataFabricacao_unique", def = "{'nome': 1, 'lote': 1, 'local': 1, 'fabricante': 1, 'dataFabricacao': 1}", unique = true)
+    @CompoundIndex(name = "nome_lote_fabricante_dataFabricacao_unique", def = "{'nome': 1, 'lote': 1, 'fabricante': 1, 'dataFabricacao': 1}", unique = true)
 })
 
 @Data
@@ -25,12 +25,9 @@ public class Vacina {
     @Id
     private String id;
 
-    private String localId;
     private String lote;
     private String nome;
 
-    private int idadeMinima;
-    private int idadeMaxima;
     private Doses doses;
 
     private String descricao;
@@ -39,5 +36,4 @@ public class Vacina {
     private LocalDate dataFabricacao;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dataValidade;
-    private int quantidadeDisponivel;
 }

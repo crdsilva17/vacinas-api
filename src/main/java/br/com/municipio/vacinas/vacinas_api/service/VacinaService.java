@@ -1,6 +1,5 @@
 package br.com.municipio.vacinas.vacinas_api.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,9 +8,6 @@ import com.mongodb.DuplicateKeyException;
 
 import lombok.RequiredArgsConstructor;
 
-import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
-import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
-import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 import br.com.municipio.vacinas.vacinas_api.model.Vacina;
 import br.com.municipio.vacinas.vacinas_api.mapper.VacinaMapper;
 import br.com.municipio.vacinas.vacinas_api.dto.VacinaRequestDTO;
@@ -28,62 +24,28 @@ import br.com.municipio.vacinas.vacinas_api.repository.VacinaRepository;
 public class VacinaService {
 
     private final VacinaRepository repository;
-    private final LocalRepository localRepository;
-    private final UsuarioRepository userRepository;
-    private final NotificationService notificationService;
     private final VacinaMapper mapper;
 
     /*
      * O método cadastrarVacina foi implementado para permitir o cadastro de uma
      * nova vacina.
      * Ele recebe os dados da vacina a ser cadastrada e verifica se já existe uma
-     * vacina com as mesmas características (nome, lote, local, fabricante e data de
+     * vacina com as mesmas características (nome, lote, fabricante e data de
      * fabricação).
-     * Se já existir, uma exceção é lançada. Caso contrário, o método verifica se o
-     * local de vacinação existe e, se não existir, lança outra exceção.
+     * Se já existir, uma exceção é lançada. 
      * Em seguida, o método verifica se o lote da vacina já existe. Se não existir,
      * um novo lote é criado e salvo no repositório.
      * Por fim, a nova vacina é salva no repositório e retornada como resposta.
      */
     public VacinaResponseDTO cadastrarVacina(VacinaRequestDTO request) {
 
-        if (repository.existsByNomeAndLoteAndLocalIdAndFabricanteAndDataFabricacao(
-                request.getNome(), request.getLote(), request.getLocalId(), request.getFabricante(),
+        if (repository.existsByNomeAndLoteAndFabricanteAndDataFabricacao(
+                request.getNome(), request.getLote(), request.getFabricante(),
                 request.getDataFabricacao())) {
             throw new RuntimeException(
-                    "Já existe uma vacina com esse nome, lote e fabricante para esse Posto de Saúde!");
+                    "Já existe uma vacina com esse nome, lote e fabricante!");
         }
         try {
-
-            if (!localRepository.existsByName(request.getLocalId())) {
-
-                throw new RuntimeException(
-                        "Posto de Saúde não encontrado! Por favor, cadastre o Posto de Saúde antes de cadastrar a vacina.");
-            }
-            LocalDate hoje = LocalDate.now();
-            LocalDate dataInicial = hoje.minusYears(request.getIdadeMaxima() + 1).plusDays(1);
-            LocalDate dataFinal = hoje.minusYears(request.getIdadeMinima());
-            List<Usuario> usuarios = userRepository.findByDataNsctoBetween(dataInicial, dataFinal);
-            for (Usuario usuario : usuarios) {
-                try {
-                    notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
-                            "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
-                                    + request.getLocalId()
-                                    + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
-                } catch (com.google.firebase.messaging.FirebaseMessagingException e) {
-                    System.err.println("Erro do Firebase para o usuário " + usuario.getId() + ": " + e.getMessage());
-                    // RECOMENDÁVEL: Se o erro for 'Requested entity was not found', limpe o token
-                    // desse usuário no banco
-                    if ("registration-token-not-registered".equals(e.getMessagingErrorCode().name())
-                            || e.getMessage().contains("not found")) {
-                        // usuario.setFirebaseToken(null);
-                        // userRepository.save(usuario);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Outro erro inesperado para o usuário " + usuario.getId());
-                    e.printStackTrace();
-                }
-            }
             return mapper.toDTO(repository.save(mapper.toEntity(request)));
 
         } catch (DuplicateKeyException e) {
@@ -99,42 +61,7 @@ public class VacinaService {
      */
     public VacinaResponseDTO editarVacina(VacinaRequestDTO request, String id) {
         Vacina vacina = mapper.toEntity(request);
-
         vacina.setId(id);
-
-        LocalDate hoje = LocalDate.now();
-
-        LocalDate dataInicial = hoje.minusYears(
-                request.getIdadeMaxima() + 1)
-                .plusDays(1);
-
-        LocalDate dataFinal = hoje.minusYears(
-                request.getIdadeMinima());
-
-        List<Usuario> usuarios = userRepository.findByDataNsctoBetween(dataInicial, dataFinal);
-        System.out.println("Usuários encontrados para notificação: " + usuarios.size());
-        for (Usuario usuario : usuarios) {
-            try {
-                System.out.println("Enviando notificação para o usuário: " + usuario.getId());
-                notificationService.notifyUser(usuario.getId(), "Vacina cadastrada",
-                        "Uma nova vacina foi cadastrada: " + request.getNome() + " no Posto de Saúde: "
-                                + request.getLocalId()
-                                + ". Verifique se você se encaixa nos critérios de vacinação e agende sua vacinação o quanto antes!");
-            } catch (com.google.firebase.messaging.FirebaseMessagingException e) {
-                System.err.println("Erro do Firebase para o usuário " + usuario.getId() + ": " + e.getMessage());
-                // RECOMENDÁVEL: Se o erro for 'Requested entity was not found', limpe o token
-                // desse usuário no banco
-                if ("registration-token-not-registered".equals(e.getMessagingErrorCode().name())
-                        || e.getMessage().contains("not found")) {
-                    // usuario.setFirebaseToken(null);
-                    // userRepository.save(usuario);
-                }
-            } catch (Exception e) {
-                System.err.println("Outro erro inesperado para o usuário " + usuario.getId());
-                e.printStackTrace();
-            }
-        }
-
         return mapper.toDTO(repository.save(vacina));
     }
 
@@ -157,22 +84,6 @@ public class VacinaService {
      */
     public List<VacinaResponseDTO> buscarVacinas() {
         return mapper.toDTOList(repository.findAll());
-    }
-
-    /*
-     * O método buscarPorLocal foi implementado para retornar uma lista com as
-     * vacinas cadastradas em um local específico.
-     */
-    public List<VacinaResponseDTO> buscarPorLocal(String localId) {
-        return mapper.toDTOList(repository.findByLocalId(localId));
-    }
-
-    /*
-     * O método buscarPorLote foi implementado para retornar uma lista com as
-     * vacinas cadastradas em um lote específico.
-     */
-    public List<VacinaResponseDTO> buscarPorLote(String lote) {
-        return mapper.toDTOList(repository.findByLote(lote));
     }
 
     /*

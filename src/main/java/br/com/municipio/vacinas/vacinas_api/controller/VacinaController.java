@@ -29,18 +29,12 @@ public class VacinaController {
 
     @PostMapping
     public ResponseEntity<VacinaResponseDTO> cadastrarVacina(@Valid @RequestBody VacinaRequestDTO request) {
-        System.out.println("Recebendo requisição para cadastrar vacina: " + request);
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarVacina(request));
     }
 
     @GetMapping("/nome")
     public ResponseEntity<List<VacinaResponseDTO>> buscarPorNome(@RequestParam("nome") String nome) {
         return ResponseEntity.ok(service.buscarPorNome(nome));
-    }
-
-    @GetMapping("/local")
-    public ResponseEntity<List<VacinaResponseDTO>> buscarPorLocal(@RequestParam("local") String local) {
-        return ResponseEntity.ok(service.buscarPorLocal(local));
     }
 
     @GetMapping
@@ -50,7 +44,6 @@ public class VacinaController {
 
     @PutMapping
     public ResponseEntity<VacinaResponseDTO> atualizarVacina(@RequestParam("id") String id, @RequestBody VacinaRequestDTO request) {
-        System.out.println("ID recebido para atualização: " + id);
         return ResponseEntity.ok(service.editarVacina(request, id));
     }
 
