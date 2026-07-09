@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,26 +41,18 @@ public class AgendamentoService {
         private final UsuarioMapper mapper;
         private final NotificationService notificationService;
 
-        private LocalTime[] parseHorario(
-                        String horarioFuncionamento) {
+        private LocalTime[] parseHorario(String horarioFuncionamento) {
 
                 String[] partes = horarioFuncionamento.split("-");
 
-                LocalTime abertura = LocalTime.parse(
-                                partes[0].trim());
+                LocalTime abertura = LocalTime.parse(partes[0].trim());
 
-                LocalTime fechamento = LocalTime.parse(
-                                partes[1].trim());
+                LocalTime fechamento = LocalTime.parse(partes[1].trim());
 
-                return new LocalTime[] {
-                                abertura,
-                                fechamento
-                };
+                return new LocalTime[] {abertura, fechamento};
         }
 
-        private List<LocalTime> gerarHorarios(
-                        LocalTime abertura,
-                        LocalTime fechamento) {
+        private List<LocalTime> gerarHorarios(LocalTime abertura, LocalTime fechamento) {
 
                 List<LocalTime> horarios = new ArrayList<>();
 
@@ -83,26 +76,27 @@ public class AgendamentoService {
                                 .findById(localId)
                                 .orElseThrow();
 
-                LocalTime[] horario = parseHorario(
-                                local.getHorarioFuncionamento());
+                LocalTime[] horario = parseHorario(local.getHorarioFuncionamento());
 
-                List<LocalTime> todos = gerarHorarios(
-                                horario[0],
-                                horario[1]);
+                List<LocalTime> todos = gerarHorarios(horario[0], horario[1]);
 
                 List<Agendamento> ocupados = repository.findByLocalIdAndData(
                                 localId,
                                 data);
 
                 Set<LocalTime> horariosOcupados = ocupados.stream()
-                                .map(
-                                                Agendamento::getHorario)
-                                .collect(
-                                                Collectors.toSet());
+                                .map(a -> a != null ? a.getHorario() : null)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toSet());
 
+                /*
+                                Set<LocalTime> horariosOcupados = ocupados.stream()
+                                .filter(Objects::nonNull)
+                                .map(Agendamento::getHorario)
+                                .collect(Collectors.toSet());
+                */
                 return todos.stream()
-                                .filter(
-                                                h -> !horariosOcupados.contains(h))
+                                .filter(h -> !horariosOcupados.contains(h))
                                 .toList();
         }
 
