@@ -27,7 +27,6 @@ public class AuthController {
     @Autowired
     private PasswordRecoveryService recoveryService;
 
-
     public AuthController(UsuarioService service) {
         this.service = service;
     }
@@ -50,8 +49,11 @@ public class AuthController {
             recoveryService.generateAndSendCode(email);
             return ResponseEntity.ok().build(); // Retorna 200 OK para o Flutter avançar de tela
         } catch (Exception e) {
-            // Boas práticas de segurança: opcionalmente retorne 200 mesmo se não achar para evitar "user enumeration"
-            return ResponseEntity.badRequest().build(); 
+            System.out.println("Erro ao gerar código de recuperação: " + e.getMessage() + " para o e-mail: " + email
+                    + " - StackTrace: " + e.getStackTrace());
+            // Boas práticas de segurança: opcionalmente retorne 200 mesmo se não achar para
+            // evitar "user enumeration"
+            return ResponseEntity.badRequest().build();
         }
     }
 
