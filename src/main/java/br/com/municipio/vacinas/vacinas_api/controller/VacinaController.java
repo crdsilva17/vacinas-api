@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,13 +43,13 @@ public class VacinaController {
         return ResponseEntity.ok(service.buscarVacinas());
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<VacinaResponseDTO> buscarPorId(@RequestParam("id") String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<VacinaResponseDTO> buscarPorId(@PathVariable("id") String id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    @PutMapping
-    public ResponseEntity<VacinaResponseDTO> atualizarVacina(@RequestParam("id") String id, @RequestBody VacinaRequestDTO request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<VacinaResponseDTO> atualizarVacina(@PathVariable("id") String id, @RequestBody VacinaRequestDTO request) {
         return ResponseEntity.ok(service.editarVacina(request, id));
     }
 
