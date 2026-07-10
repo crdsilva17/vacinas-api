@@ -18,25 +18,26 @@ public class CampanhaService {
     private CampanhaRepository repository;
 
     /*
-    *   Realiza a criação de uma nova campanha de Vacinação
-    *
-    */
-    public CampanhaResponseDTO criarCampanha (CampanhaRequestDTO request) {
+     * Realiza a criação de uma nova campanha de Vacinação
+     *
+     */
+    public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO request) {
         campanhaVacinacao = mapper.toCampanhaVacinacao(request);
         return mapper.toDTO(repository.save(campanhaVacinacao));
     }
 
     /*
-     *  Retorna uma lista com todas as campanhas de vacinação cadastradas
+     * Retorna uma lista com todas as campanhas de vacinação cadastradas
      * por local (Posto de Vacinação).
      *
      */
     public List<CampanhaResponseDTO> buscarPorLocalId(String localId) {
-        return repository.findByLocalIds(localId).get().stream().map(mapper::toDTO).toList();
+        return mapper.toDTOList(repository.findByLocalIds(localId)
+                .orElseThrow(() -> new RuntimeException("Nenhuma campanha encontrada para o local informado.")));
     }
 
     /*
-    *   Atualiza os dados de uma campanha de vacinação existente.
+     * Atualiza os dados de uma campanha de vacinação existente.
      */
     public CampanhaResponseDTO atualizarCampanha(CampanhaRequestDTO request, String id) {
         campanhaVacinacao = mapper.toCampanhaVacinacao(request);
@@ -45,13 +46,13 @@ public class CampanhaService {
     }
 
     /*
-    *   Permite Deletar uma campanha de vacinação existente.
+     * Permite Deletar uma campanha de vacinação existente.
      */
     public void excluirCampanha(String id) {
         repository.deleteById(id);
     }
 
     public List<CampanhaResponseDTO> buscarTodos() {
-        return repository.findAll().stream().map(mapper::toDTO).toList();
+        return mapper.toDTOList(repository.findAll());
     }
 }
