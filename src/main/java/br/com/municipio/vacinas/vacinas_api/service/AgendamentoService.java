@@ -49,7 +49,7 @@ public class AgendamentoService {
 
                 LocalTime fechamento = LocalTime.parse(partes[1].trim());
 
-                return new LocalTime[] {abertura, fechamento};
+                return new LocalTime[] { abertura, fechamento };
         }
 
         private List<LocalTime> gerarHorarios(LocalTime abertura, LocalTime fechamento) {
@@ -90,11 +90,11 @@ public class AgendamentoService {
                                 .collect(Collectors.toSet());
 
                 /*
-                                Set<LocalTime> horariosOcupados = ocupados.stream()
-                                .filter(Objects::nonNull)
-                                .map(Agendamento::getHorario)
-                                .collect(Collectors.toSet());
-                */
+                 * Set<LocalTime> horariosOcupados = ocupados.stream()
+                 * .filter(Objects::nonNull)
+                 * .map(Agendamento::getHorario)
+                 * .collect(Collectors.toSet());
+                 */
                 return todos.stream()
                                 .filter(h -> !horariosOcupados.contains(h))
                                 .toList();
@@ -227,4 +227,10 @@ public class AgendamentoService {
                         log.error("Erro ao enviar notificação de cancelamento", e);
                 }
         }
+
+        public List<Agendamento> listarAgendamentos(String usuarioId) {
+
+                return repository.findByUsuarioId(usuarioId);
+        }
+
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.municipio.vacinas.vacinas_api.dto.AgendamentoRequestDTO;
+import br.com.municipio.vacinas.vacinas_api.model.Agendamento;
 import br.com.municipio.vacinas.vacinas_api.service.AgendamentoService;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +47,13 @@ public class AgendamentoController {
                 return service.possuiAgendamento(
                                 authentication.getName(),
                                 vacinaId);
+        }
+
+        @GetMapping("{usuarioId}")
+        public List<Agendamento> listarAgendamentos(
+                        @PathVariable String usuarioId) {
+
+                return service.listarAgendamentos(usuarioId);
         }
 
         @PostMapping
