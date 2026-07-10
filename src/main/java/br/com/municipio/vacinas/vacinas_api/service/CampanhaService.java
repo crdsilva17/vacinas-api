@@ -5,24 +5,24 @@ import br.com.municipio.vacinas.vacinas_api.dto.CampanhaResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.CampanhaMapper;
 import br.com.municipio.vacinas.vacinas_api.model.CampanhaVacinacao;
 import br.com.municipio.vacinas.vacinas_api.repository.CampanhaRepository;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Data
+@RequiredArgsConstructor
 @Service
 public class CampanhaService {
-    private CampanhaVacinacao campanhaVacinacao;
-    private CampanhaMapper mapper;
-    private CampanhaRepository repository;
+    private final CampanhaMapper mapper;
+    private final CampanhaRepository repository;
 
     /*
      * Realiza a criação de uma nova campanha de Vacinação
      *
      */
     public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO request) {
-        campanhaVacinacao = mapper.toCampanhaVacinacao(request);
+        CampanhaVacinacao campanhaVacinacao = mapper.toCampanhaVacinacao(request);
         return mapper.toDTO(repository.save(campanhaVacinacao));
     }
 
@@ -40,7 +40,7 @@ public class CampanhaService {
      * Atualiza os dados de uma campanha de vacinação existente.
      */
     public CampanhaResponseDTO atualizarCampanha(CampanhaRequestDTO request, String id) {
-        campanhaVacinacao = mapper.toCampanhaVacinacao(request);
+        CampanhaVacinacao campanhaVacinacao = mapper.toCampanhaVacinacao(request);
         campanhaVacinacao.setId(id);
         return mapper.toDTO(repository.save(campanhaVacinacao));
     }
