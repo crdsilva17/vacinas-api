@@ -87,6 +87,14 @@ public class VacinaService {
     }
 
     /*
+     * O método buscarPorId foi implementado para retornar uma vacina com base no
+     * seu ID.
+     */
+    public VacinaResponseDTO buscarPorId(String id) {
+        return mapper.toDTO(repository.findById(id).orElseThrow(() -> new RuntimeException("Vacina não encontrada!")));
+    }
+
+    /*
      * O método buscarPorNome foi implementado para retornar uma lista com as
      * vacinas cadastradas com um nome específico.
      */

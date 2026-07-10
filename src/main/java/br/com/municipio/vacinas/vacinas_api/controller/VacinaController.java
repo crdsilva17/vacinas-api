@@ -42,6 +42,11 @@ public class VacinaController {
         return ResponseEntity.ok(service.buscarVacinas());
     }
 
+    @GetMapping("/id")
+    public ResponseEntity<VacinaResponseDTO> buscarPorId(@RequestParam("id") String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
     @PutMapping
     public ResponseEntity<VacinaResponseDTO> atualizarVacina(@RequestParam("id") String id, @RequestBody VacinaRequestDTO request) {
         return ResponseEntity.ok(service.editarVacina(request, id));
