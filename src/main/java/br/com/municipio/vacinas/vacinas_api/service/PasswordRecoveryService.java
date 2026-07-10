@@ -3,6 +3,7 @@ package br.com.municipio.vacinas.vacinas_api.service;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,9 @@ import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
 
 @Service
 public class PasswordRecoveryService {
+
+    @Value("${EMAIL_ADDRESS}")
+    private String emailRemetente;
 
     @Autowired
     private PasswordRecoveryCodeRepository recoveryCodeRepository;
@@ -67,6 +71,7 @@ public class PasswordRecoveryService {
 
     private void sendEmail(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(emailRemetente); // Certifique-se de configurar o e-mail do remetente no application.properties
         message.setTo(to);
         message.setSubject("Código de Recuperação de Senha");
         message.setText("Olá! Seu código para redefinição de senha é: " + code + "\nEste código expira em 15 minutos.");
