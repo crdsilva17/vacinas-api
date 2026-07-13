@@ -23,7 +23,6 @@ public class CampanhaService {
     private final UsuarioRepository usuarioRepository; // <-- Injetado para buscar os usuários da UBS
     private final NotificationService notificationService; // <-- Injetado para enviar os alertas FCM
 
-
     /*
      * Realiza a criação de uma nova campanha de Vacinação
      *
@@ -31,10 +30,10 @@ public class CampanhaService {
     public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO request) {
         CampanhaVacinacao campanhaVacinacao = mapper.toCampanhaVacinacao(request);
         CampanhaResponseDTO response = mapper.toDTO(repository.save(campanhaVacinacao));
-        
+
         // Dispara a notificação após salvar com sucesso
         notificarUsuariosElegiveisAsync(campanhaVacinacao, "Nova Campanha de Vacinação!");
-        
+
         return response;
     }
 
@@ -55,35 +54,46 @@ public class CampanhaService {
         CampanhaVacinacao campanhaVacinacao = mapper.toCampanhaVacinacao(request);
         campanhaVacinacao.setId(id);
         CampanhaResponseDTO response = mapper.toDTO(repository.save(campanhaVacinacao));
-        
+
         // Dispara a notificação informando a atualização
         notificarUsuariosElegiveisAsync(campanhaVacinacao, "Campanha de Vacinação Atualizada!");
-        
+
         return response;
     }
 
     /**
-     * Filtra e envia as notificações em segundo plano para não travar a requisição do app Flutter.
+     * Filtra e envia as notificações em segundo plano para não travar a requisição
+     * do app Flutter.
      */
     private void notificarUsuariosElegiveisAsync(CampanhaVacinacao campanha, String tituloPrefixo) {
         new Thread(() -> {
             try {
+
+                // LOG DE DIAGNÓSTICO: Verifique no console do Railway se os IDs aparecem aqui
+                System.out.println("DEBUG: Iniciando busca para os locais: " + campanha.getLocalIds());
+
                 // 1. Busca todos os usuários que pertencem aos locais (UBSs) da campanha
                 // Se no banco localIds for uma lista, use um método 'In' no repositório.
                 List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(campanha.getLocalIds());
 
-                // Tratamento preventivo caso as idades venham vazias ou nulas da tela do Flutter
-                int idadeMinima = (campanha.getAgeMin() != null && !campanha.getAgeMin().isEmpty()) 
-                        ? Integer.parseInt(campanha.getAgeMin()) : 0;
-                int idadeMaxima = (campanha.getAgeMax() != null && !campanha.getAgeMax().isEmpty()) 
-                        ? Integer.parseInt(campanha.getAgeMax()) : 130;
+                System.out.println("DEBUG: Quantidade de usuários encontrados no posto: " + usuariosDoPosto.size());
+
+                // Tratamento preventivo caso as idades venham vazias ou nulas da tela do
+                // Flutter
+                int idadeMinima = (campanha.getAgeMin() != null && !campanha.getAgeMin().isEmpty())
+                        ? Integer.parseInt(campanha.getAgeMin())
+                        : 0;
+                int idadeMaxima = (campanha.getAgeMax() != null && !campanha.getAgeMax().isEmpty())
+                        ? Integer.parseInt(campanha.getAgeMax())
+                        : 130;
 
                 String titulo = tituloPrefixo + " " + campanha.getNome();
                 String mensagem = "Uma nova vacina está disponível para a sua faixa etária no seu posto de saúde.";
 
                 // 2. Filtra pela faixa etária calculando a idade baseada no nascimento
                 for (Usuario usuario : usuariosDoPosto) {
-                    if (usuario.getDataNscto() == null) continue;
+                    if (usuario.getDataNscto() == null)
+                        continue;
 
                     // Calcula a idade do usuário hoje
                     int idadeUsuario = Period.between(usuario.getDataNscto(), LocalDate.now()).getYears();
@@ -99,7 +109,6 @@ public class CampanhaService {
             }
         }).start();
     }
-
 
     /*
      * Permite Deletar uma campanha de vacinação existente.
