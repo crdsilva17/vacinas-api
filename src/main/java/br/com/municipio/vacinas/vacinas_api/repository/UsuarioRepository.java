@@ -27,6 +27,6 @@ public interface UsuarioRepository extends MongoRepository<Usuario, String> {
 
     List<Usuario> findByDataNsctoBetween(LocalDate dataInicial, LocalDate dataFinal);
 
-    List<Usuario> findByUbsIdIn(List<String> ubsIds);
+    List<Usuario> findByLocalIdIn(List<String> localIds);
 
 }

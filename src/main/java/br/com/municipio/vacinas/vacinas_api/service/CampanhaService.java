@@ -70,7 +70,7 @@ public class CampanhaService {
             try {
                 // 1. Busca todos os usuários que pertencem aos locais (UBSs) da campanha
                 // Se no banco localIds for uma lista, use um método 'In' no repositório.
-                List<Usuario> usuariosDoPosto = usuarioRepository.findByUbsIdIn(campanha.getLocalIds());
+                List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(campanha.getLocalIds());
 
                 // Tratamento preventivo caso as idades venham vazias ou nulas da tela do Flutter
                 int idadeMinima = (campanha.getAgeMin() != null && !campanha.getAgeMin().isEmpty()) 
