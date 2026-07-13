@@ -4,6 +4,7 @@ import br.com.municipio.vacinas.vacinas_api.dto.CampanhaRequestDTO;
 import br.com.municipio.vacinas.vacinas_api.dto.CampanhaResponseDTO;
 import br.com.municipio.vacinas.vacinas_api.mapper.CampanhaMapper;
 import br.com.municipio.vacinas.vacinas_api.model.CampanhaVacinacao;
+import br.com.municipio.vacinas.vacinas_api.model.LocalVacina;
 import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 import br.com.municipio.vacinas.vacinas_api.repository.CampanhaRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
@@ -70,24 +71,24 @@ public class CampanhaService {
     private void notificarUsuariosElegiveisAsync(CampanhaVacinacao campanha, String tituloPrefixo) {
         new Thread(() -> {
             try {
-
-                // LOG DE DIAGNÓSTICO: Verifique no console do Railway se os IDs aparecem aqui
                 System.out.println("DEBUG: Iniciando busca para os locais: " + campanha.getLocalIds());
 
-                // Busca os nomes por extenso das UBSs usando os IDs que vieram do Flutter
-                List<String> nomesDosPostos = localRepository.findNamesByIdIn(campanha.getLocalIds());
-                System.out.println("DEBUG: Nomes dos postos da campanha: " + nomesDosPostos);
+                // 1. Busca os objetos de locais (retorna a lista com o JSON que vimos no log)
+                List<LocalVacina> locaisDaCampanha = localRepository.findAllById(campanha.getLocalIds());
 
-                // Busca os usuários passando a lista de NOMES 
+                // 2. Extrai APENAS o nome por extenso de cada posto usando Stream
+                List<String> nomesDosPostos = locaisDaCampanha.stream()
+                        .map(LocalVacina::getName) // Garanta que o getter do nome na sua classe LocalVacina seja
+                                                   // .getName()
+                        .toList();
+
+                System.out.println("DEBUG: Nomes dos postos extraídos para a busca: " + nomesDosPostos);
+
+                // 3. Agora sim, busca os usuários passando a lista de nomes puros 
                 List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(nomesDosPostos);
                 System.out.println("DEBUG: Quantidade de usuários encontrados no posto: " + usuariosDoPosto.size());
 
-                // 1. Busca todos os usuários que pertencem aos locais (UBSs) da campanha
-                // Se no banco localIds for uma lista, use um método 'In' no repositório.
-                //List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(campanha.getLocalIds());
-
-                // Tratamento preventivo caso as idades venham vazias ou nulas da tela do
-                // Flutter
+                // Tratamento preventivo de idades
                 int idadeMinima = (campanha.getAgeMin() != null && !campanha.getAgeMin().isEmpty())
                         ? Integer.parseInt(campanha.getAgeMin())
                         : 0;
@@ -98,22 +99,20 @@ public class CampanhaService {
                 String titulo = tituloPrefixo + " " + campanha.getNome();
                 String mensagem = "Uma nova vacina está disponível para a sua faixa etária no seu posto de saúde.";
 
-                // 2. Filtra pela faixa etária calculando a idade baseada no nascimento
+                // 4. Varre os usuários encontrados
                 for (Usuario usuario : usuariosDoPosto) {
                     if (usuario.getDataNscto() == null)
                         continue;
 
-                    // Calcula a idade do usuário hoje
                     int idadeUsuario = Period.between(usuario.getDataNscto(), LocalDate.now()).getYears();
 
-                    // 3. Se estiver na faixa, aciona o NotificationService para mandar o Push FCM
                     if (idadeUsuario >= idadeMinima && idadeUsuario <= idadeMaxima) {
                         notificationService.notifyUser(usuario.getId(), titulo, mensagem);
                     }
                 }
             } catch (Exception e) {
-                // Loga o erro para evitar que a Thread derrube a API principal
                 System.err.println("Erro ao processar notificações da campanha: " + e.getMessage());
+                e.printStackTrace();
             }
         }).start();
     }
