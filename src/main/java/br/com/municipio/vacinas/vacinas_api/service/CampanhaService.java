@@ -6,6 +6,7 @@ import br.com.municipio.vacinas.vacinas_api.mapper.CampanhaMapper;
 import br.com.municipio.vacinas.vacinas_api.model.CampanhaVacinacao;
 import br.com.municipio.vacinas.vacinas_api.model.Usuario;
 import br.com.municipio.vacinas.vacinas_api.repository.CampanhaRepository;
+import br.com.municipio.vacinas.vacinas_api.repository.LocalRepository;
 import br.com.municipio.vacinas.vacinas_api.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @Service
 public class CampanhaService {
     private final CampanhaMapper mapper;
+    private final LocalRepository localRepository;
     private final CampanhaRepository repository;
     private final UsuarioRepository usuarioRepository; // <-- Injetado para buscar os usuários da UBS
     private final NotificationService notificationService; // <-- Injetado para enviar os alertas FCM
@@ -72,11 +74,17 @@ public class CampanhaService {
                 // LOG DE DIAGNÓSTICO: Verifique no console do Railway se os IDs aparecem aqui
                 System.out.println("DEBUG: Iniciando busca para os locais: " + campanha.getLocalIds());
 
+                // Busca os nomes por extenso das UBSs usando os IDs que vieram do Flutter
+                List<String> nomesDosPostos = localRepository.findNamesByIdIn(campanha.getLocalIds());
+                System.out.println("DEBUG: Nomes dos postos da campanha: " + nomesDosPostos);
+
+                // Busca os usuários passando a lista de NOMES 
+                List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(nomesDosPostos);
+                System.out.println("DEBUG: Quantidade de usuários encontrados no posto: " + usuariosDoPosto.size());
+
                 // 1. Busca todos os usuários que pertencem aos locais (UBSs) da campanha
                 // Se no banco localIds for uma lista, use um método 'In' no repositório.
-                List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(campanha.getLocalIds());
-
-                System.out.println("DEBUG: Quantidade de usuários encontrados no posto: " + usuariosDoPosto.size());
+                //List<Usuario> usuariosDoPosto = usuarioRepository.findByLocalIdIn(campanha.getLocalIds());
 
                 // Tratamento preventivo caso as idades venham vazias ou nulas da tela do
                 // Flutter

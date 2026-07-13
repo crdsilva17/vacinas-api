@@ -1,5 +1,6 @@
 package br.com.municipio.vacinas.vacinas_api.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,7 @@ public interface LocalRepository extends org.springframework.data.mongodb.reposi
 
     @Transactional
     void deleteByName(String name);
+
+    List<String> findNamesByIdIn(List<String> ids);
 
 }
